@@ -170,7 +170,7 @@ export default function BirthdayPage() {
   }, [])
 
   const startMusic = useCallback(() => {
-    const audio = musicRef.current ?? new Audio(`${import.meta.env.BASE_URL}assets/danceclub.mp3`)
+    const audio = musicRef.current ?? new Audio(`${import.meta.env.BASE_URL}assets/dancelounge.mp3`)
     musicRef.current = audio
     audio.loop = true
     audio.volume = 0.35
