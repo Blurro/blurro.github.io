@@ -23,7 +23,7 @@ const FRONT_BALLS = 3
 const BALL_SIZE = 104
 const FRONT_BALL_SIZE = BALL_SIZE * 1.5
 const TOTAL_BALLS = NUM_BALLS + FRONT_BALLS
-const CURSOR_RADIUS = 20
+const CURSOR_RADIUS = 10
 
 interface Ball {
   id: number
@@ -357,7 +357,7 @@ export default function BirthdayPage() {
           meluhhhhhh
         </div>
         <span className="birthday-hearts">👽 💕 👽</span>
-        <div className="birthday-sub">love from your very coool alien boyfriend</div>
+        <div className="birthday-sub">2love from your very coool alien boyfriend</div>
       </div>
 
       <div ref={containerRef} className="balls-container">
