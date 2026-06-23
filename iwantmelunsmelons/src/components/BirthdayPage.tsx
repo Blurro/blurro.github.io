@@ -23,7 +23,7 @@ const FRONT_BALLS = 3
 const BALL_SIZE = 104
 const FRONT_BALL_SIZE = BALL_SIZE * 1.5
 const TOTAL_BALLS = NUM_BALLS + FRONT_BALLS
-const CURSOR_RADIUS = 42
+const CURSOR_RADIUS = 20
 
 interface Ball {
   id: number
@@ -172,7 +172,7 @@ export default function BirthdayPage() {
   const startMusic = useCallback(() => {
     if (musicStartedRef.current) return
 
-    const audio = musicRef.current ?? new Audio(`${import.meta.env.BASE_URL}assets/danceclub.mp3`)
+    const audio = musicRef.current ?? new Audio(`${import.meta.env.BASE_URL}assets/dancelounge.mp3`)
     musicRef.current = audio
     audio.loop = true
     audio.volume = 0.45
