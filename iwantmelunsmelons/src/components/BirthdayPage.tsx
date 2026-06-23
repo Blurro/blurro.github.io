@@ -170,16 +170,12 @@ export default function BirthdayPage() {
   }, [])
 
   const startMusic = useCallback(() => {
-    if (musicStartedRef.current) return
-
-    const audio = musicRef.current ?? new Audio(`${import.meta.env.BASE_URL}assets/dancelounge.mp3`)
+    const audio = musicRef.current ?? new Audio(`${import.meta.env.BASE_URL}assets/danceclub.mp3`)
     musicRef.current = audio
     audio.loop = true
-    audio.volume = 0.45
+    audio.volume = 0.35
 
-    void audio.play().then(() => {
-      musicStartedRef.current = true
-    }).catch(() => {})
+    return audio.play()
   }, [])
 
   const spawnConfetti = useCallback(() => {
@@ -222,7 +218,19 @@ export default function BirthdayPage() {
     }
 
     spawnConfetti()
-    startMusic()
+    void startMusic().catch(() => {
+      const unlockMusic = () => {
+        void startMusic().then(() => {
+          window.removeEventListener('pointerdown', unlockMusic)
+          window.removeEventListener('keydown', unlockMusic)
+          window.removeEventListener('touchstart', unlockMusic)
+        }).catch(() => {})
+      }
+
+      window.addEventListener('pointerdown', unlockMusic)
+      window.addEventListener('keydown', unlockMusic)
+      window.addEventListener('touchstart', unlockMusic)
+    })
 
     const onMouseMove = (e: MouseEvent) => {
       mouseRef.current = { x: e.clientX, y: e.clientY }
@@ -357,7 +365,7 @@ export default function BirthdayPage() {
           meluhhhhhh
         </div>
         <span className="birthday-hearts">👽 💕 👽</span>
-        <div className="birthday-sub">2love from your very coool alien boyfriend</div>
+        <div className="birthday-sub">3love from your very coool alien boyfriend</div>
       </div>
 
       <div ref={containerRef} className="balls-container">

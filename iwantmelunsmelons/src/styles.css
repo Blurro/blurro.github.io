@@ -167,10 +167,7 @@ body {
   animation: heartsBeat 1.2s ease-in-out infinite;
   display: block;
   filter: none;
-  text-shadow:
-    0 0 4px #ffffff,
-    0 0 8px #ffffff,
-    0 2px 0 rgba(255, 255, 255, 0.3);
+  text-shadow: none;
 }
 
 @keyframes textFloat {
