@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback, useMemo, type CSSProperties } from 'react'
+import { useEffect, useRef, useCallback, useState, type CSSProperties } from 'react'
 
 const BOUNCING_IMAGE_SOURCES = [
   `${import.meta.env.BASE_URL}assets/bouncing-object-1.png`,
@@ -7,12 +7,8 @@ const BOUNCING_IMAGE_SOURCES = [
   `${import.meta.env.BASE_URL}assets/bouncing-object-4.png`,
 ]
 
-const FLYING_IMAGE_SOURCES = [
-  `${import.meta.env.BASE_URL}assets/flying-rectangle-1.png`,
-  `${import.meta.env.BASE_URL}assets/flying-rectangle-2.png`,
-  `${import.meta.env.BASE_URL}assets/flying-rectangle-3.png`,
-  `${import.meta.env.BASE_URL}assets/flying-rectangle-4.png`,
-]
+const FLYING_RECTANGLE_COUNT = 4
+const FLYING_RECTANGLES_ON_SCREEN = 4
 
 const CURSOR_IMAGE_SRC = `${import.meta.env.BASE_URL}assets/mouse-cursor.png`
 
@@ -46,8 +42,78 @@ interface Ball {
   frontLayer: boolean
 }
 
+interface FlyingImageItem {
+  id: number
+  src: string
+  fromX: string
+  fromY: string
+  toX: string
+  toY: string
+  duration: string
+  delay: string
+  rotation: string
+}
+
 function randomBetween(a: number, b: number) {
   return a + Math.random() * (b - a)
+}
+
+function getFlyingRectangleSrc(i: number) {
+  return `${import.meta.env.BASE_URL}assets/flying-rectangle-${i}.png`
+}
+
+function getFlyingRectangleIndexes(slot: number) {
+  const start = Math.floor((slot * FLYING_RECTANGLE_COUNT) / FLYING_RECTANGLES_ON_SCREEN) + 1
+  const end = Math.max(start, Math.floor(((slot + 1) * FLYING_RECTANGLE_COUNT) / FLYING_RECTANGLES_ON_SCREEN))
+
+  return Array.from({ length: end - start + 1 }, (_, i) => start + i)
+}
+
+function pickFlyingRectangleSrc(slot: number, currentSrc?: string) {
+  const choices = getFlyingRectangleIndexes(slot).map(getFlyingRectangleSrc)
+  const filtered = choices.length > 1 && currentSrc ? choices.filter(src => src !== currentSrc) : choices
+
+  return filtered[Math.floor(Math.random() * filtered.length)]
+}
+
+function createFlyingImageItems(): FlyingImageItem[] {
+  return Array.from({ length: FLYING_RECTANGLES_ON_SCREEN }, (_, i) => {
+    const paths = [
+      {
+        fromX: '-35vw',
+        fromY: `${12 + i * 19}vh`,
+        toX: '135vw',
+        toY: `${18 + i * 13}vh`,
+      },
+      {
+        fromX: '135vw',
+        fromY: `${18 + i * 18}vh`,
+        toX: '-35vw',
+        toY: `${8 + i * 14}vh`,
+      },
+      {
+        fromX: `${12 + i * 22}vw`,
+        fromY: '-35vh',
+        toX: `${75 - i * 12}vw`,
+        toY: '135vh',
+      },
+      {
+        fromX: `${80 - i * 16}vw`,
+        fromY: '135vh',
+        toX: `${15 + i * 20}vw`,
+        toY: '-35vh',
+      },
+    ]
+
+    return {
+      id: i,
+      src: pickFlyingRectangleSrc(i),
+      ...paths[i % paths.length],
+      duration: `${(17 + i * 3) / 2}s`,
+      delay: `${i * -2}s`,
+      rotation: `${i % 2 === 0 ? -7 : 6}deg`,
+    }
+  })
 }
 
 function createBalls(width: number, height: number): Ball[] {
@@ -85,68 +151,35 @@ export default function BirthdayPage() {
   const mouseRef = useRef({ x: -9999, y: -9999 })
   const confettiTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const audioCtxRef = useRef<AudioContext | null>(null)
+  const musicRef = useRef<HTMLAudioElement | null>(null)
+  const musicStartedRef = useRef(false)
+  const [flyingImageItems, setFlyingImageItems] = useState(createFlyingImageItems)
 
-  const flyingImageItems = useMemo(() => FLYING_IMAGE_SOURCES.map((src, i) => {
-    const paths = [
-      {
-        fromX: '-35vw',
-        fromY: `${12 + i * 19}vh`,
-        toX: '135vw',
-        toY: `${18 + i * 13}vh`,
-      },
-      {
-        fromX: '135vw',
-        fromY: `${18 + i * 18}vh`,
-        toX: '-35vw',
-        toY: `${8 + i * 14}vh`,
-      },
-      {
-        fromX: `${12 + i * 22}vw`,
-        fromY: '-35vh',
-        toX: `${75 - i * 12}vw`,
-        toY: '135vh',
-      },
-      {
-        fromX: `${80 - i * 16}vw`,
-        fromY: '135vh',
-        toX: `${15 + i * 20}vw`,
-        toY: '-35vh',
-      },
-    ]
-
-    return {
-      src,
-      ...paths[i % paths.length],
-      duration: `${(17 + i * 3) / 2}s`,
-      delay: `${i * -2}s`,
-      rotation: `${i % 2 === 0 ? -7 : 6}deg`,
-    }
-  }), [])
+  const changeFlyingImage = useCallback((id: number) => {
+    setFlyingImageItems(items => items.map(item => (
+      item.id === id
+        ? { ...item, src: pickFlyingRectangleSrc(id, item.src) }
+        : item
+    )))
+  }, [])
 
   const playClickSound = useCallback(() => {
-    const AudioContextClass = window.AudioContext
-      ?? (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
-    if (!AudioContextClass) return
+    const audio = new Audio(`${import.meta.env.BASE_URL}assets/ringsfx.mp3`)
+    audio.volume = 0.45
+    void audio.play()
+  }, [])
 
-    const ctx = audioCtxRef.current ?? new AudioContextClass()
-    audioCtxRef.current = ctx
-    if (ctx.state === 'suspended') void ctx.resume()
+  const startMusic = useCallback(() => {
+    if (musicStartedRef.current) return
 
-    const now = ctx.currentTime
-    const oscillator = ctx.createOscillator()
-    const gain = ctx.createGain()
+    const audio = musicRef.current ?? new Audio(`${import.meta.env.BASE_URL}assets/danceclub.mp3`)
+    musicRef.current = audio
+    audio.loop = true
+    audio.volume = 0.45
 
-    oscillator.type = 'sine'
-    oscillator.frequency.setValueAtTime(720, now)
-    oscillator.frequency.exponentialRampToValueAtTime(360, now + 0.12)
-    gain.gain.setValueAtTime(0.0001, now)
-    gain.gain.exponentialRampToValueAtTime(0.22, now + 0.01)
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.14)
-
-    oscillator.connect(gain)
-    gain.connect(ctx.destination)
-    oscillator.start(now)
-    oscillator.stop(now + 0.15)
+    void audio.play().then(() => {
+      musicStartedRef.current = true
+    }).catch(() => {})
   }, [])
 
   const spawnConfetti = useCallback(() => {
@@ -189,6 +222,7 @@ export default function BirthdayPage() {
     }
 
     spawnConfetti()
+    startMusic()
 
     const onMouseMove = (e: MouseEvent) => {
       mouseRef.current = { x: e.clientX, y: e.clientY }
@@ -279,22 +313,26 @@ export default function BirthdayPage() {
       window.removeEventListener('mousemove', onMouseMove)
       window.removeEventListener('pointerdown', playClickSound)
       if (confettiTimerRef.current) clearTimeout(confettiTimerRef.current)
+
+      if (musicRef.current) {
+        musicRef.current.pause()
+        musicRef.current.currentTime = 0
+      }
     }
-  }, [spawnConfetti, playClickSound])
+  }, [spawnConfetti, playClickSound, startMusic])
 
   return (
     <>
-      {/* Animated background */}
       <div className="birthday-bg" />
 
-      {/* Replaceable background image flyers */}
       <div className="flying-images" aria-hidden="true">
         {flyingImageItems.map((item) => (
           <img
-            key={item.src}
+            key={item.id}
             className="flying-image"
             src={item.src}
             alt=""
+            onAnimationIteration={() => changeFlyingImage(item.id)}
             style={{
               '--fly-from-x': item.fromX,
               '--fly-from-y': item.fromY,
@@ -308,10 +346,8 @@ export default function BirthdayPage() {
         ))}
       </div>
 
-      {/* Sparkle overlay */}
       <div className="sparkles" />
 
-      {/* Birthday message */}
       <div className="birthday-text">
         <div className="birthday-main">Happy Birthday</div>
         <div className="birthday-main" style={{ fontSize: 'clamp(2.5rem, 6vw, 5.5rem)', marginTop: '-0.1em' }}>
@@ -324,7 +360,6 @@ export default function BirthdayPage() {
         <div className="birthday-sub">love from your very coool alien boyfriend</div>
       </div>
 
-      {/* Balls */}
       <div ref={containerRef} className="balls-container">
         {Array.from({ length: NUM_BALLS }, (_, i) => (
           <div
@@ -350,7 +385,6 @@ export default function BirthdayPage() {
         ))}
       </div>
 
-      {/* Front balls */}
       <div className="front-balls-container" aria-hidden="true">
         {Array.from({ length: FRONT_BALLS }, (_, i) => (
           <div
@@ -376,7 +410,6 @@ export default function BirthdayPage() {
         ))}
       </div>
 
-      {/* Custom cursor */}
       <div ref={cursorRef} className="cursor" style={{ position: 'fixed', top: 0, left: 0, pointerEvents: 'none', zIndex: 9999 }}>
         <img src={CURSOR_IMAGE_SRC} alt="" draggable={false} />
       </div>

@@ -151,13 +151,14 @@ body {
 
 .birthday-sub {
   font-family: 'Comic Sans MS', 'Comic Sans', cursive;
-  font-size: clamp(1rem, 2.5vw, 2.5rem);
+  font-size: clamp(0.95rem, 2.2vw, 2.3rem);
   font-weight: 900;
   color: #ff4fa3;
   text-shadow:
     2px 2px 0px rgba(255, 255, 255, 0.85),
     4px 4px 0px rgba(255, 156, 205, 0.35);
   margin-top: 0.5rem;
+  white-space: nowrap;
 }
 
 .birthday-hearts {
@@ -165,7 +166,11 @@ body {
   margin-top: 0.4rem;
   animation: heartsBeat 1.2s ease-in-out infinite;
   display: block;
-  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.5));
+  filter: none;
+  text-shadow:
+    0 0 4px #ffffff,
+    0 0 8px #ffffff,
+    0 2px 0 rgba(255, 255, 255, 0.9);
 }
 
 @keyframes textFloat {
