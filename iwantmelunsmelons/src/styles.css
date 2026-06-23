@@ -151,7 +151,7 @@ body {
 
 .birthday-sub {
   font-family: 'Comic Sans MS', 'Comic Sans', cursive;
-  font-size: clamp(1rem, 2.5vw, 1.8rem);
+  font-size: clamp(1rem, 2.5vw, 2.5rem);
   font-weight: 900;
   color: #ff4fa3;
   text-shadow:
@@ -165,7 +165,7 @@ body {
   margin-top: 0.4rem;
   animation: heartsBeat 1.2s ease-in-out infinite;
   display: block;
-  filter: drop-shadow(0 0 8px rgba(255, 100, 150, 0.6));
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.5));
 }
 
 @keyframes textFloat {
