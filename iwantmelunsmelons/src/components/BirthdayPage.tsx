@@ -103,31 +103,36 @@ function pickFlyingRectangleSrc(slot: number, currentSrc?: string) {
 }
 
 function createFlyingImageItems(): FlyingImageItem[] {
+  const offscreenX = 'calc(-1 * max(35vw, 520px))'
+  const offscreenRight = 'calc(100vw + max(35vw, 520px))'
+  const offscreenY = 'calc(-1 * max(35vh, 520px))'
+  const offscreenBottom = 'calc(100vh + max(35vh, 520px))'
+
   return Array.from({ length: FLYING_RECTANGLES_ON_SCREEN }, (_, i) => {
     const paths = [
       {
-        fromX: '-35vw',
+        fromX: offscreenX,
         fromY: `${12 + i * 19}vh`,
-        toX: '135vw',
+        toX: offscreenRight,
         toY: `${18 + i * 13}vh`,
       },
       {
-        fromX: '135vw',
+        fromX: offscreenRight,
         fromY: `${18 + i * 18}vh`,
-        toX: '-35vw',
+        toX: offscreenX,
         toY: `${8 + i * 14}vh`,
       },
       {
         fromX: `${12 + i * 22}vw`,
-        fromY: '-35vh',
+        fromY: offscreenY,
         toX: `${75 - i * 12}vw`,
-        toY: '135vh',
+        toY: offscreenBottom,
       },
       {
         fromX: `${80 - i * 16}vw`,
-        fromY: '135vh',
+        fromY: offscreenBottom,
         toX: `${15 + i * 20}vw`,
-        toY: '-35vh',
+        toY: offscreenY,
       },
     ]
 
