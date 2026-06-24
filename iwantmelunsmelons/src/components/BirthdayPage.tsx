@@ -179,7 +179,7 @@ export default function BirthdayPage() {
     const audio = musicRef.current ?? new Audio(MUSIC_SRC)
     musicRef.current = audio
     audio.loop = true
-    audio.volume = 0.35
+    audio.volume = 0.6
 
     return audio.play()
   }, [])
