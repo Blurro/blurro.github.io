@@ -12,6 +12,7 @@ const FLYING_RECTANGLES_ON_SCREEN = 4
 
 const CELEB_SOUND_COUNT = 10
 const PRESENT_START_DELAY_MS = 500
+const MOBILE_OPEN_CLICK_COUNT = 15
 
 const CURSOR_IMAGE_SRC = `${import.meta.env.BASE_URL}assets/mouse-cursor.png`
 const PRESENT_IMAGE_SRC = `${import.meta.env.BASE_URL}assets/present.png`
@@ -223,6 +224,7 @@ export default function BirthdayPage() {
   const musicRef = useRef<HTMLAudioElement | null>(null)
   const openingStartedRef = useRef(false)
   const celebrationStartedRef = useRef(false)
+  const mobileOpenClickCountRef = useRef(0)
   const presentStartTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const spawnTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const hidePresentTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -269,6 +271,29 @@ export default function BirthdayPage() {
     return audio.play()
   }, [])
 
+  const startOpeningSequence = useCallback(() => {
+    if (openingStartedRef.current) return
+
+    openingStartedRef.current = true
+
+    playRandomCelebSound()
+    void startMusic().catch(() => {})
+
+    presentStartTimerRef.current = setTimeout(() => {
+      setOpeningStarted(true)
+
+      spawnTimerRef.current = setTimeout(() => {
+        setFlyingImageItems(createFlyingImageItems())
+        celebrationStartedRef.current = true
+        setCelebrationStarted(true)
+      }, 500)
+
+      hidePresentTimerRef.current = setTimeout(() => {
+        setPresentVisible(false)
+      }, 1000)
+    }, PRESENT_START_DELAY_MS)
+  }, [startMusic, playRandomCelebSound])
+
   const spawnConfetti = useCallback(() => {
     for (let i = 0; i < 30; i++) {
       setTimeout(() => {
@@ -304,38 +329,33 @@ export default function BirthdayPage() {
       }
     }
 
+    const onPointerDown = () => {
+      playPointerClickSound()
+
+      if (openingStartedRef.current || celebrationStartedRef.current) return
+
+      mobileOpenClickCountRef.current += 1
+
+      if (mobileOpenClickCountRef.current >= MOBILE_OPEN_CLICK_COUNT) {
+        startOpeningSequence()
+      }
+    }
+
     window.addEventListener('mousemove', onMouseMove)
-    window.addEventListener('pointerdown', playPointerClickSound)
+    window.addEventListener('pointerdown', onPointerDown)
 
     return () => {
       window.removeEventListener('mousemove', onMouseMove)
-      window.removeEventListener('pointerdown', playPointerClickSound)
+      window.removeEventListener('pointerdown', onPointerDown)
     }
-  }, [playPointerClickSound])
+  }, [playPointerClickSound, startOpeningSequence])
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.code !== 'Space' || openingStartedRef.current) return
+      if (e.code !== 'Space') return
 
       e.preventDefault()
-      openingStartedRef.current = true
-
-      playRandomCelebSound()
-      void startMusic().catch(() => {})
-
-      presentStartTimerRef.current = setTimeout(() => {
-        setOpeningStarted(true)
-
-        spawnTimerRef.current = setTimeout(() => {
-          setFlyingImageItems(createFlyingImageItems())
-          celebrationStartedRef.current = true
-          setCelebrationStarted(true)
-        }, 500)
-
-        hidePresentTimerRef.current = setTimeout(() => {
-          setPresentVisible(false)
-        }, 1000)
-      }, PRESENT_START_DELAY_MS)
+      startOpeningSequence()
     }
 
     window.addEventListener('keydown', onKeyDown)
@@ -355,7 +375,7 @@ export default function BirthdayPage() {
         clearTimeout(hidePresentTimerRef.current)
       }
     }
-  }, [startMusic, playRandomCelebSound])
+  }, [startOpeningSequence])
 
   useEffect(() => {
     if (!celebrationStarted) return
@@ -520,29 +540,13 @@ export default function BirthdayPage() {
       <div className="birthday-bg" />
 
       {presentVisible && (
-        <div
-          className="present-screen"
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 10000,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            pointerEvents: 'none',
-            userSelect: 'none',
-            overflow: 'hidden',
-          }}
-        >
+        <div className="present-screen">
           <img
+            className="present-image"
             src={PRESENT_IMAGE_SRC}
-            alt="Press spacebar to open"
+            alt="Press spacebar or tap 15 times to open"
             draggable={false}
             style={{
-              width: '100vw',
-              height: '100vh',
-              objectFit: 'cover',
-              display: 'block',
               transform: openingStarted ? 'scale(12)' : 'scale(1)',
               opacity: openingStarted ? 0 : 1,
               transition:
@@ -562,6 +566,7 @@ export default function BirthdayPage() {
                 className="flying-image"
                 src={item.src}
                 alt=""
+                draggable={false}
                 onDragStart={(e) => e.preventDefault()}
                 onAnimationIteration={() => changeFlyingImage(item.id)}
                 style={{
