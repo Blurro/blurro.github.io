@@ -256,7 +256,7 @@ export default function BirthdayPage() {
 
   const playRandomCelebSound = useCallback(() => {
     const audio = new Audio(`${import.meta.env.BASE_URL}assets/celeb${Math.floor(Math.random() * CELEB_SOUND_COUNT) + 1}.mp3`)
-    audio.volume = 0.35
+    audio.volume = 0.3
     void audio.play()
   }, [])
 
