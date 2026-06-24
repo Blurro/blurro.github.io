@@ -7,7 +7,7 @@ const BOUNCING_IMAGE_SOURCES = [
   `${import.meta.env.BASE_URL}assets/bouncing-object-4.png`,
 ]
 
-const FLYING_RECTANGLE_COUNT = 8
+const FLYING_RECTANGLE_COUNT = 44
 const FLYING_RECTANGLES_ON_SCREEN = 4
 
 const CURSOR_IMAGE_SRC = `${import.meta.env.BASE_URL}assets/mouse-cursor.png`
@@ -396,7 +396,7 @@ export default function BirthdayPage() {
               height: '100vh',
               objectFit: 'cover',
               display: 'block',
-              transform: openingStarted ? 'scale(6)' : 'scale(1)',
+              transform: openingStarted ? 'scale(12)' : 'scale(1)',
               opacity: openingStarted ? 0 : 1,
               transition:
                 'transform 1s linear, opacity 0.45s linear 0.5s',
