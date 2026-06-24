@@ -15,8 +15,8 @@ const PRESENT_IMAGE_SRC = `${import.meta.env.BASE_URL}assets/present.png`
 const MUSIC_SRC = `${import.meta.env.BASE_URL}assets/dancelounge.mp3`
 const NYAN_CAT_IMAGE_SRC = `${import.meta.env.BASE_URL}assets/nyancat.gif`
 
-const NYAN_CAT_MIN_DELAY_MS = 5_000
-const NYAN_CAT_MAX_DELAY_MS = 6_000
+const NYAN_CAT_MIN_DELAY_MS = 3_000
+const NYAN_CAT_MAX_DELAY_MS = 30_000
 const NYAN_CAT_DURATION_MS = 2_000
 
 const PASTEL_COLORS = [
