@@ -13,6 +13,11 @@ const FLYING_RECTANGLES_ON_SCREEN = 4
 const CURSOR_IMAGE_SRC = `${import.meta.env.BASE_URL}assets/mouse-cursor.png`
 const PRESENT_IMAGE_SRC = `${import.meta.env.BASE_URL}assets/present.png`
 const MUSIC_SRC = `${import.meta.env.BASE_URL}assets/dancelounge.mp3`
+const NYAN_CAT_IMAGE_SRC = `${import.meta.env.BASE_URL}assets/nyancat.png`
+
+const NYAN_CAT_MIN_DELAY_MS = 5_000
+const NYAN_CAT_MAX_DELAY_MS = 6_000
+const NYAN_CAT_DURATION_MS = 2_000
 
 const PASTEL_COLORS = [
   '#FFB3C6', '#FFD6A5', '#FDFFB6', '#CAFFBF',
@@ -54,6 +59,17 @@ interface FlyingImageItem {
   duration: string
   delay: string
   rotation: string
+}
+
+interface NyanCatFlyby {
+  id: number
+  fromX: number
+  fromY: number
+  toX: number
+  toY: number
+  rotation: number
+  flipY: boolean
+  active: boolean
 }
 
 function randomBetween(a: number, b: number) {
@@ -144,6 +160,27 @@ function createBalls(width: number, height: number): Ball[] {
   })
 }
 
+function createNyanCatFlyby(): NyanCatFlyby {
+  const w = window.innerWidth
+  const h = window.innerHeight
+  const angle = randomBetween(-Math.PI, Math.PI)
+  const xDir = Math.cos(angle)
+  const yDir = Math.sin(angle)
+  const travelDistance = Math.sqrt(w * w + h * h) / 2 + 500
+  const rotation = Math.atan2(yDir, xDir) * 180 / Math.PI
+
+  return {
+    id: Date.now() + Math.random(),
+    fromX: w / 2 - xDir * travelDistance,
+    fromY: h / 2 - yDir * travelDistance,
+    toX: w / 2 + xDir * travelDistance,
+    toY: h / 2 + yDir * travelDistance,
+    rotation,
+    flipY: rotation > 90 || rotation < -90,
+    active: false,
+  }
+}
+
 export default function BirthdayPage() {
   const containerRef = useRef<HTMLDivElement>(null)
   const ballsRef = useRef<Ball[]>([])
@@ -156,10 +193,14 @@ export default function BirthdayPage() {
   const openingStartedRef = useRef(false)
   const spawnTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const hidePresentTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const nyanCatTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const nyanCatEndTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const nyanCatFrameRef = useRef<number | null>(null)
   const [openingStarted, setOpeningStarted] = useState(false)
   const [presentVisible, setPresentVisible] = useState(true)
   const [celebrationStarted, setCelebrationStarted] = useState(false)
   const [flyingImageItems, setFlyingImageItems] = useState<FlyingImageItem[]>([])
+  const [nyanCat, setNyanCat] = useState<NyanCatFlyby | null>(null)
 
   const changeFlyingImage = useCallback((id: number) => {
     setFlyingImageItems(items => items.map(item => (
@@ -259,6 +300,48 @@ export default function BirthdayPage() {
   useEffect(() => {
     if (!celebrationStarted) return
 
+    function scheduleNyanCat() {
+      nyanCatTimerRef.current = setTimeout(() => {
+        const nextNyanCat = createNyanCatFlyby()
+        setNyanCat(nextNyanCat)
+
+        nyanCatFrameRef.current = requestAnimationFrame(() => {
+          nyanCatFrameRef.current = requestAnimationFrame(() => {
+            setNyanCat(current => (
+              current?.id === nextNyanCat.id
+                ? { ...current, active: true }
+                : current
+            ))
+          })
+        })
+
+        nyanCatEndTimerRef.current = setTimeout(() => {
+          setNyanCat(null)
+          scheduleNyanCat()
+        }, NYAN_CAT_DURATION_MS + 100)
+      }, randomBetween(NYAN_CAT_MIN_DELAY_MS, NYAN_CAT_MAX_DELAY_MS))
+    }
+
+    scheduleNyanCat()
+
+    return () => {
+      if (nyanCatTimerRef.current) {
+        clearTimeout(nyanCatTimerRef.current)
+      }
+
+      if (nyanCatEndTimerRef.current) {
+        clearTimeout(nyanCatEndTimerRef.current)
+      }
+
+      if (nyanCatFrameRef.current !== null) {
+        cancelAnimationFrame(nyanCatFrameRef.current)
+      }
+    }
+  }, [celebrationStarted])
+
+  useEffect(() => {
+    if (!celebrationStarted) return
+
     const w = window.innerWidth
     const h = window.innerHeight
     ballsRef.current = createBalls(w, h)
@@ -281,7 +364,6 @@ export default function BirthdayPage() {
 
     spawnConfetti()
 
-    window.addEventListener('pointerdown', playClickSound)
     window.addEventListener('pointerdown', playClickSound)
 
     function animate() {
@@ -359,7 +441,6 @@ export default function BirthdayPage() {
 
     return () => {
       cancelAnimationFrame(rafRef.current)
-      window.removeEventListener('mousemove', onMouseMove)
       window.removeEventListener('pointerdown', playClickSound)
 
       if (confettiTimerRef.current) {
@@ -501,8 +582,38 @@ export default function BirthdayPage() {
               </div>
             ))}
           </div>
+
+          {nyanCat && (
+            <img
+              src={NYAN_CAT_IMAGE_SRC}
+              alt=""
+              draggable={false}
+              aria-hidden="true"
+              style={{
+                position: 'fixed',
+                left: 0,
+                top: 0,
+                zIndex: 1000,
+                width: 'clamp(160px, 18vw, 320px)',
+                height: 'auto',
+                pointerEvents: 'none',
+                userSelect: 'none',
+                imageRendering: 'pixelated',
+                transition: nyanCat.active
+                  ? `transform ${NYAN_CAT_DURATION_MS}ms linear`
+                  : 'none',
+                transform: `
+                  translate(-50%, -50%)
+                  translate(${nyanCat.active ? nyanCat.toX : nyanCat.fromX}px, ${nyanCat.active ? nyanCat.toY : nyanCat.fromY}px)
+                  rotate(${nyanCat.rotation}deg)
+                  scaleY(${nyanCat.flipY ? -1 : 1})
+                `,
+              }}
+            />
+          )}
         </>
       )}
+
       <div ref={cursorRef} className="cursor" style={{ position: 'fixed', top: 0, left: 0, pointerEvents: 'none', zIndex: 9999 }}>
         <img src={CURSOR_IMAGE_SRC} alt="" draggable={false} />
       </div>
