@@ -562,6 +562,7 @@ export default function BirthdayPage() {
                 className="flying-image"
                 src={item.src}
                 alt=""
+                onDragStart={(e) => e.preventDefault()}
                 onAnimationIteration={() => changeFlyingImage(item.id)}
                 style={{
                   '--fly-from-x': item.fromX,

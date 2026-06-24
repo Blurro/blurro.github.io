@@ -259,3 +259,27 @@ body {
   0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
   100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
 }
+
+html,
+body,
+#root,
+img,
+.birthday-bg,
+.flying-images,
+.flying-image,
+.balls-container,
+.front-balls-container,
+.ball,
+.ball-asset,
+.present-screen,
+.cursor {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+}
+
+.flying-images,
+.flying-image {
+  pointer-events: none;
+}
