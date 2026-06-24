@@ -17,6 +17,8 @@ const CURSOR_IMAGE_SRC = `${import.meta.env.BASE_URL}assets/mouse-cursor.png`
 const PRESENT_IMAGE_SRC = `${import.meta.env.BASE_URL}assets/present.png`
 const MUSIC_SRC = `${import.meta.env.BASE_URL}assets/dancelounge.mp3`
 const NYAN_CAT_IMAGE_SRC = `${import.meta.env.BASE_URL}assets/nyancat.gif`
+const PRE_CELEBRATION_CLICK_SOUND_SRC = `${import.meta.env.BASE_URL}assets/dingxp.mp3`
+const CELEBRATION_CLICK_SOUND_SRC = `${import.meta.env.BASE_URL}assets/ringsfx.mp3`
 
 const NYAN_CAT_MIN_DELAY_MS = 4_000
 const NYAN_CAT_MAX_DELAY_MS = 30_000
@@ -220,6 +222,7 @@ export default function BirthdayPage() {
   const confettiTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const musicRef = useRef<HTMLAudioElement | null>(null)
   const openingStartedRef = useRef(false)
+  const celebrationStartedRef = useRef(false)
   const presentStartTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const spawnTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const hidePresentTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -240,9 +243,14 @@ export default function BirthdayPage() {
     )))
   }, [])
 
-  const playClickSound = useCallback(() => {
-    const audio = new Audio(`${import.meta.env.BASE_URL}assets/ringsfx.mp3`)
-    audio.volume = 0.45
+  const playPointerClickSound = useCallback(() => {
+    const audio = new Audio(
+      celebrationStartedRef.current
+        ? CELEBRATION_CLICK_SOUND_SRC
+        : PRE_CELEBRATION_CLICK_SOUND_SRC,
+    )
+
+    audio.volume = celebrationStartedRef.current ? 0.45 : 0.55
     void audio.play()
   }, [])
 
@@ -283,6 +291,10 @@ export default function BirthdayPage() {
   }, [])
 
   useEffect(() => {
+    celebrationStartedRef.current = celebrationStarted
+  }, [celebrationStarted])
+
+  useEffect(() => {
     const onMouseMove = (e: MouseEvent) => {
       mouseRef.current = { x: e.clientX, y: e.clientY }
 
@@ -293,11 +305,13 @@ export default function BirthdayPage() {
     }
 
     window.addEventListener('mousemove', onMouseMove)
+    window.addEventListener('pointerdown', playPointerClickSound)
 
     return () => {
       window.removeEventListener('mousemove', onMouseMove)
+      window.removeEventListener('pointerdown', playPointerClickSound)
     }
-  }, [])
+  }, [playPointerClickSound])
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -314,6 +328,7 @@ export default function BirthdayPage() {
 
         spawnTimerRef.current = setTimeout(() => {
           setFlyingImageItems(createFlyingImageItems())
+          celebrationStartedRef.current = true
           setCelebrationStarted(true)
         }, 500)
 
@@ -409,8 +424,6 @@ export default function BirthdayPage() {
 
     spawnConfetti()
 
-    window.addEventListener('pointerdown', playClickSound)
-
     function animate() {
       const w = window.innerWidth
       const h = window.innerHeight
@@ -486,7 +499,6 @@ export default function BirthdayPage() {
 
     return () => {
       cancelAnimationFrame(rafRef.current)
-      window.removeEventListener('pointerdown', playClickSound)
 
       if (confettiTimerRef.current) {
         clearTimeout(confettiTimerRef.current)
@@ -501,7 +513,7 @@ export default function BirthdayPage() {
         musicRef.current.currentTime = 0
       }
     }
-  }, [celebrationStarted, spawnConfetti, playClickSound])
+  }, [celebrationStarted, spawnConfetti])
 
   return (
     <>
