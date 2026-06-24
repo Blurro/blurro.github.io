@@ -10,12 +10,13 @@ const BOUNCING_IMAGE_SOURCES = [
 const FLYING_RECTANGLE_COUNT = 44
 const FLYING_RECTANGLES_ON_SCREEN = 4
 
+const CELEB_SOUND_COUNT = 10
 const CURSOR_IMAGE_SRC = `${import.meta.env.BASE_URL}assets/mouse-cursor.png`
 const PRESENT_IMAGE_SRC = `${import.meta.env.BASE_URL}assets/present.png`
 const MUSIC_SRC = `${import.meta.env.BASE_URL}assets/dancelounge.mp3`
 const NYAN_CAT_IMAGE_SRC = `${import.meta.env.BASE_URL}assets/nyancat.gif`
 
-const NYAN_CAT_MIN_DELAY_MS = 3_000
+const NYAN_CAT_MIN_DELAY_MS = 4_000
 const NYAN_CAT_MAX_DELAY_MS = 30_000
 const NYAN_CAT_DURATION_MS = 2_000
 
@@ -242,6 +243,12 @@ export default function BirthdayPage() {
     void audio.play()
   }, [])
 
+  const playRandomCelebSound = useCallback(() => {
+    const audio = new Audio(`${import.meta.env.BASE_URL}assets/celeb${Math.floor(Math.random() * CELEB_SOUND_COUNT) + 1}.mp3`)
+    audio.volume = 0.7
+    void audio.play()
+  }, [])
+
   const startMusic = useCallback(() => {
     const audio = musicRef.current ?? new Audio(MUSIC_SRC)
     musicRef.current = audio
@@ -296,6 +303,7 @@ export default function BirthdayPage() {
       e.preventDefault()
       openingStartedRef.current = true
       setOpeningStarted(true)
+      playRandomCelebSound()
       void startMusic().catch(() => {})
 
       spawnTimerRef.current = setTimeout(() => {
@@ -321,7 +329,7 @@ export default function BirthdayPage() {
         clearTimeout(hidePresentTimerRef.current)
       }
     }
-  }, [startMusic])
+  }, [startMusic, playRandomCelebSound])
 
   useEffect(() => {
     if (!celebrationStarted) return
