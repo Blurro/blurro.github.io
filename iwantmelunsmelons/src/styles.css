@@ -284,6 +284,15 @@ img,
   pointer-events: none;
 }
 
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+  background: #ffb3c6;
+  overscroll-behavior: none;
+}
+
 .present-screen {
   position: fixed;
   inset: 0;
@@ -294,6 +303,7 @@ img,
   pointer-events: none;
   user-select: none;
   overflow: hidden;
+  background: transparent;
 }
 
 .present-image {

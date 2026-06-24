@@ -14,6 +14,8 @@ const CELEB_SOUND_COUNT = 10
 const PRESENT_START_DELAY_MS = 500
 const MOBILE_OPEN_CLICK_COUNT = 15
 
+const MOBILE_THEME_COLOR = '#ffb3c6'
+
 const CURSOR_IMAGE_SRC = `${import.meta.env.BASE_URL}assets/mouse-cursor.png`
 const PRESENT_IMAGE_SRC = `${import.meta.env.BASE_URL}assets/present.png`
 const MUSIC_SRC = `${import.meta.env.BASE_URL}assets/dancelounge.mp3`
@@ -213,6 +215,28 @@ function createNyanCatFlyby(): NyanCatFlyby {
   }
 }
 
+function getOrCreateMeta(name: string) {
+  const existing = document.querySelector<HTMLMetaElement>(`meta[name="${name}"]`)
+
+  if (existing) {
+    return {
+      element: existing,
+      created: false,
+      previousContent: existing.getAttribute('content'),
+    }
+  }
+
+  const element = document.createElement('meta')
+  element.setAttribute('name', name)
+  document.head.appendChild(element)
+
+  return {
+    element,
+    created: true,
+    previousContent: null,
+  }
+}
+
 export default function BirthdayPage() {
   const containerRef = useRef<HTMLDivElement>(null)
   const ballsRef = useRef<Ball[]>([])
@@ -231,6 +255,7 @@ export default function BirthdayPage() {
   const nyanCatTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const nyanCatEndTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const nyanCatFrameRef = useRef<number | null>(null)
+  const preloadedImageRefs = useRef<HTMLImageElement[]>([])
   const [openingStarted, setOpeningStarted] = useState(false)
   const [presentVisible, setPresentVisible] = useState(true)
   const [celebrationStarted, setCelebrationStarted] = useState(false)
@@ -313,6 +338,57 @@ export default function BirthdayPage() {
     }
 
     confettiTimerRef.current = setTimeout(spawnConfetti, 6000)
+  }, [])
+
+  useEffect(() => {
+    const themeMeta = getOrCreateMeta('theme-color')
+    const appleStatusMeta = getOrCreateMeta('apple-mobile-web-app-status-bar-style')
+    const previousHtmlBackground = document.documentElement.style.backgroundColor
+    const previousBodyBackground = document.body.style.backgroundColor
+
+    themeMeta.element.setAttribute('content', MOBILE_THEME_COLOR)
+    appleStatusMeta.element.setAttribute('content', 'black-translucent')
+    document.documentElement.style.backgroundColor = MOBILE_THEME_COLOR
+    document.body.style.backgroundColor = MOBILE_THEME_COLOR
+
+    return () => {
+      if (themeMeta.created) {
+        themeMeta.element.remove()
+      } else if (themeMeta.previousContent !== null) {
+        themeMeta.element.setAttribute('content', themeMeta.previousContent)
+      }
+
+      if (appleStatusMeta.created) {
+        appleStatusMeta.element.remove()
+      } else if (appleStatusMeta.previousContent !== null) {
+        appleStatusMeta.element.setAttribute('content', appleStatusMeta.previousContent)
+      }
+
+      document.documentElement.style.backgroundColor = previousHtmlBackground
+      document.body.style.backgroundColor = previousBodyBackground
+    }
+  }, [])
+
+  useEffect(() => {
+    const imageSources = [
+      PRESENT_IMAGE_SRC,
+      CURSOR_IMAGE_SRC,
+      NYAN_CAT_IMAGE_SRC,
+      ...BOUNCING_IMAGE_SOURCES,
+      ...Array.from({ length: FLYING_RECTANGLE_COUNT }, (_, i) => getFlyingRectangleSrc(i + 1)),
+    ]
+
+    preloadedImageRefs.current = imageSources.map(src => {
+      const img = new Image()
+      img.decoding = 'async'
+      img.src = src
+      void img.decode?.().catch(() => {})
+      return img
+    })
+
+    return () => {
+      preloadedImageRefs.current = []
+    }
   }, [])
 
   useEffect(() => {
