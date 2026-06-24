@@ -206,6 +206,23 @@ export default function BirthdayPage() {
   }, [])
 
   useEffect(() => {
+    const onMouseMove = (e: MouseEvent) => {
+      mouseRef.current = { x: e.clientX, y: e.clientY }
+
+      if (cursorRef.current) {
+        cursorRef.current.style.left = `${e.clientX}px`
+        cursorRef.current.style.top = `${e.clientY}px`
+      }
+    }
+
+    window.addEventListener('mousemove', onMouseMove)
+
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove)
+    }
+  }, [])
+
+  useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.code !== 'Space' || openingStartedRef.current) return
 
@@ -264,15 +281,7 @@ export default function BirthdayPage() {
 
     spawnConfetti()
 
-    const onMouseMove = (e: MouseEvent) => {
-      mouseRef.current = { x: e.clientX, y: e.clientY }
-      if (cursorRef.current) {
-        cursorRef.current.style.left = `${e.clientX}px`
-        cursorRef.current.style.top = `${e.clientY}px`
-      }
-    }
-
-    window.addEventListener('mousemove', onMouseMove)
+    window.addEventListener('pointerdown', playClickSound)
     window.addEventListener('pointerdown', playClickSound)
 
     function animate() {
@@ -492,12 +501,11 @@ export default function BirthdayPage() {
               </div>
             ))}
           </div>
-
-          <div ref={cursorRef} className="cursor" style={{ position: 'fixed', top: 0, left: 0, pointerEvents: 'none', zIndex: 9999 }}>
-            <img src={CURSOR_IMAGE_SRC} alt="" draggable={false} />
-          </div>
         </>
       )}
+      <div ref={cursorRef} className="cursor" style={{ position: 'fixed', top: 0, left: 0, pointerEvents: 'none', zIndex: 9999 }}>
+        <img src={CURSOR_IMAGE_SRC} alt="" draggable={false} />
+      </div>
     </>
   )
 }
