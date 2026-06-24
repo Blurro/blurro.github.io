@@ -13,7 +13,7 @@ const FLYING_RECTANGLES_ON_SCREEN = 4
 const CURSOR_IMAGE_SRC = `${import.meta.env.BASE_URL}assets/mouse-cursor.png`
 const PRESENT_IMAGE_SRC = `${import.meta.env.BASE_URL}assets/present.png`
 const MUSIC_SRC = `${import.meta.env.BASE_URL}assets/dancelounge.mp3`
-const NYAN_CAT_IMAGE_SRC = `${import.meta.env.BASE_URL}assets/nyancat.png`
+const NYAN_CAT_IMAGE_SRC = `${import.meta.env.BASE_URL}assets/nyancat.gif`
 
 const NYAN_CAT_MIN_DELAY_MS = 5_000
 const NYAN_CAT_MAX_DELAY_MS = 6_000
@@ -163,18 +163,44 @@ function createBalls(width: number, height: number): Ball[] {
 function createNyanCatFlyby(): NyanCatFlyby {
   const w = window.innerWidth
   const h = window.innerHeight
-  const angle = randomBetween(-Math.PI, Math.PI)
-  const xDir = Math.cos(angle)
-  const yDir = Math.sin(angle)
-  const travelDistance = Math.sqrt(w * w + h * h) / 2 + 500
-  const rotation = Math.atan2(yDir, xDir) * 180 / Math.PI
+  const margin = 180
+  const side = Math.floor(Math.random() * 4)
+
+  let fromX = 0
+  let fromY = 0
+  let toX = 0
+  let toY = 0
+
+  if (side === 0) {
+    fromX = -margin
+    fromY = randomBetween(0, h)
+    toX = w + margin
+    toY = randomBetween(0, h)
+  } else if (side === 1) {
+    fromX = w + margin
+    fromY = randomBetween(0, h)
+    toX = -margin
+    toY = randomBetween(0, h)
+  } else if (side === 2) {
+    fromX = randomBetween(0, w)
+    fromY = -margin
+    toX = randomBetween(0, w)
+    toY = h + margin
+  } else {
+    fromX = randomBetween(0, w)
+    fromY = h + margin
+    toX = randomBetween(0, w)
+    toY = -margin
+  }
+
+  const rotation = Math.atan2(toY - fromY, toX - fromX) * 180 / Math.PI
 
   return {
     id: Date.now() + Math.random(),
-    fromX: w / 2 - xDir * travelDistance,
-    fromY: h / 2 - yDir * travelDistance,
-    toX: w / 2 + xDir * travelDistance,
-    toY: h / 2 + yDir * travelDistance,
+    fromX,
+    fromY,
+    toX,
+    toY,
     rotation,
     flipY: rotation > 90 || rotation < -90,
     active: false,
@@ -594,7 +620,7 @@ export default function BirthdayPage() {
                 left: 0,
                 top: 0,
                 zIndex: 1000,
-                width: 'clamp(160px, 18vw, 320px)',
+                width: 'clamp(53px, 6vw, 107px)',
                 height: 'auto',
                 pointerEvents: 'none',
                 userSelect: 'none',
