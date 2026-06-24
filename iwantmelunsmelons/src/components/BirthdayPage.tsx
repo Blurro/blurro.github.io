@@ -11,7 +11,7 @@ const FLYING_RECTANGLE_COUNT = 44
 const FLYING_RECTANGLES_ON_SCREEN = 4
 
 const CELEB_SOUND_COUNT = 10
-const PRESENT_START_DELAY_MS = 1_000
+const PRESENT_START_DELAY_MS = 500
 
 const CURSOR_IMAGE_SRC = `${import.meta.env.BASE_URL}assets/mouse-cursor.png`
 const PRESENT_IMAGE_SRC = `${import.meta.env.BASE_URL}assets/present.png`
