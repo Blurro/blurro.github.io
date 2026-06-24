@@ -11,6 +11,8 @@ const FLYING_RECTANGLE_COUNT = 4
 const FLYING_RECTANGLES_ON_SCREEN = 4
 
 const CURSOR_IMAGE_SRC = `${import.meta.env.BASE_URL}assets/mouse-cursor.png`
+const PRESENT_IMAGE_SRC = `${import.meta.env.BASE_URL}assets/present.png`
+const MUSIC_SRC = `${import.meta.env.BASE_URL}assets/dancelounge.mp3`
 
 const PASTEL_COLORS = [
   '#FFB3C6', '#FFD6A5', '#FDFFB6', '#CAFFBF',
@@ -150,10 +152,14 @@ export default function BirthdayPage() {
   const rafRef = useRef<number>(0)
   const mouseRef = useRef({ x: -9999, y: -9999 })
   const confettiTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const audioCtxRef = useRef<AudioContext | null>(null)
   const musicRef = useRef<HTMLAudioElement | null>(null)
-  const musicStartedRef = useRef(false)
-  const [flyingImageItems, setFlyingImageItems] = useState(createFlyingImageItems)
+  const openingStartedRef = useRef(false)
+  const spawnTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const hidePresentTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [openingStarted, setOpeningStarted] = useState(false)
+  const [presentVisible, setPresentVisible] = useState(true)
+  const [celebrationStarted, setCelebrationStarted] = useState(false)
+  const [flyingImageItems, setFlyingImageItems] = useState<FlyingImageItem[]>([])
 
   const changeFlyingImage = useCallback((id: number) => {
     setFlyingImageItems(items => items.map(item => (
@@ -170,7 +176,7 @@ export default function BirthdayPage() {
   }, [])
 
   const startMusic = useCallback(() => {
-    const audio = musicRef.current ?? new Audio(`${import.meta.env.BASE_URL}assets/dancelounge.mp3`)
+    const audio = musicRef.current ?? new Audio(MUSIC_SRC)
     musicRef.current = audio
     audio.loop = true
     audio.volume = 0.35
@@ -195,16 +201,55 @@ export default function BirthdayPage() {
         setTimeout(() => el.remove(), duration + 100)
       }, i * 80)
     }
+
     confettiTimerRef.current = setTimeout(spawnConfetti, 6000)
   }, [])
 
   useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.code !== 'Space' || openingStartedRef.current) return
+
+      e.preventDefault()
+      openingStartedRef.current = true
+      setOpeningStarted(true)
+      void startMusic().catch(() => {})
+
+      spawnTimerRef.current = setTimeout(() => {
+        setFlyingImageItems(createFlyingImageItems())
+        setCelebrationStarted(true)
+      }, 500)
+
+      hidePresentTimerRef.current = setTimeout(() => {
+        setPresentVisible(false)
+      }, 1000)
+    }
+
+    window.addEventListener('keydown', onKeyDown)
+
+    return () => {
+      window.removeEventListener('keydown', onKeyDown)
+
+      if (spawnTimerRef.current) {
+        clearTimeout(spawnTimerRef.current)
+      }
+
+      if (hidePresentTimerRef.current) {
+        clearTimeout(hidePresentTimerRef.current)
+      }
+    }
+  }, [startMusic])
+
+  useEffect(() => {
+    if (!celebrationStarted) return
+
     const w = window.innerWidth
     const h = window.innerHeight
     ballsRef.current = createBalls(w, h)
 
     const sparklesEl = document.querySelector('.sparkles')
     if (sparklesEl) {
+      sparklesEl.replaceChildren()
+
       for (let i = 0; i < 28; i++) {
         const s = document.createElement('div')
         s.className = 'sparkle'
@@ -218,19 +263,6 @@ export default function BirthdayPage() {
     }
 
     spawnConfetti()
-    void startMusic().catch(() => {
-      const unlockMusic = () => {
-        void startMusic().then(() => {
-          window.removeEventListener('pointerdown', unlockMusic)
-          window.removeEventListener('keydown', unlockMusic)
-          window.removeEventListener('touchstart', unlockMusic)
-        }).catch(() => {})
-      }
-
-      window.addEventListener('pointerdown', unlockMusic)
-      window.addEventListener('keydown', unlockMusic)
-      window.addEventListener('touchstart', unlockMusic)
-    })
 
     const onMouseMove = (e: MouseEvent) => {
       mouseRef.current = { x: e.clientX, y: e.clientY }
@@ -320,107 +352,152 @@ export default function BirthdayPage() {
       cancelAnimationFrame(rafRef.current)
       window.removeEventListener('mousemove', onMouseMove)
       window.removeEventListener('pointerdown', playClickSound)
-      if (confettiTimerRef.current) clearTimeout(confettiTimerRef.current)
+
+      if (confettiTimerRef.current) {
+        clearTimeout(confettiTimerRef.current)
+      }
+
+      if (sparklesEl) {
+        sparklesEl.replaceChildren()
+      }
 
       if (musicRef.current) {
         musicRef.current.pause()
         musicRef.current.currentTime = 0
       }
     }
-  }, [spawnConfetti, playClickSound, startMusic])
+  }, [celebrationStarted, spawnConfetti, playClickSound])
 
   return (
     <>
       <div className="birthday-bg" />
 
-      <div className="flying-images" aria-hidden="true">
-        {flyingImageItems.map((item) => (
+      {presentVisible && (
+        <div
+          className="present-screen"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 10000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            pointerEvents: 'none',
+            userSelect: 'none',
+            overflow: 'hidden',
+          }}
+        >
           <img
-            key={item.id}
-            className="flying-image"
-            src={item.src}
-            alt=""
-            onAnimationIteration={() => changeFlyingImage(item.id)}
+            src={PRESENT_IMAGE_SRC}
+            alt="Press spacebar to open"
+            draggable={false}
             style={{
-              '--fly-from-x': item.fromX,
-              '--fly-from-y': item.fromY,
-              '--fly-to-x': item.toX,
-              '--fly-to-y': item.toY,
-              '--fly-duration': item.duration,
-              '--fly-delay': item.delay,
-              '--fly-rotation': item.rotation,
-            } as CSSProperties}
+              width: '100vw',
+              height: '100vh',
+              objectFit: 'cover',
+              display: 'block',
+              transform: openingStarted ? 'scale(3)' : 'scale(1)',
+              opacity: openingStarted ? 0 : 1,
+              transition:
+                'transform 1s linear, opacity 0.45s linear 0.5s',
+              transformOrigin: 'center',
+            }}
           />
-        ))}
-      </div>
-
-      <div className="sparkles" />
-
-      <div className="birthday-text">
-        <div className="birthday-main">Happy Birthday</div>
-        <div className="birthday-main" style={{ fontSize: 'clamp(2.5rem, 6vw, 5.5rem)', marginTop: '-0.1em' }}>
-          to my beautiful
         </div>
-        <div className="birthday-main birthday-name">
-          meluhhhhhh
-        </div>
-        <span className="birthday-hearts">👽 💕 👽</span>
-        <div className="birthday-sub">3love from your very coool alien boyfriend</div>
-      </div>
+      )}
 
-      <div ref={containerRef} className="balls-container">
-        {Array.from({ length: NUM_BALLS }, (_, i) => (
-          <div
-            key={i}
-            ref={el => { ballElemsRef.current[i] = el }}
-            className="ball"
-            style={{
-              width: BALL_SIZE,
-              height: BALL_SIZE,
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              willChange: 'transform',
-            }}
-          >
-            <img
-              className="ball-asset"
-              src={BOUNCING_IMAGE_SOURCES[i % BOUNCING_IMAGE_SOURCES.length]}
-              alt=""
-              draggable={false}
-            />
+      {celebrationStarted && (
+        <>
+          <div className="flying-images" aria-hidden="true">
+            {flyingImageItems.map((item) => (
+              <img
+                key={item.id}
+                className="flying-image"
+                src={item.src}
+                alt=""
+                onAnimationIteration={() => changeFlyingImage(item.id)}
+                style={{
+                  '--fly-from-x': item.fromX,
+                  '--fly-from-y': item.fromY,
+                  '--fly-to-x': item.toX,
+                  '--fly-to-y': item.toY,
+                  '--fly-duration': item.duration,
+                  '--fly-delay': item.delay,
+                  '--fly-rotation': item.rotation,
+                } as CSSProperties}
+              />
+            ))}
           </div>
-        ))}
-      </div>
 
-      <div className="front-balls-container" aria-hidden="true">
-        {Array.from({ length: FRONT_BALLS }, (_, i) => (
-          <div
-            key={i}
-            ref={el => { ballElemsRef.current[NUM_BALLS + i] = el }}
-            className="ball ball-front"
-            style={{
-              width: FRONT_BALL_SIZE,
-              height: FRONT_BALL_SIZE,
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              willChange: 'transform',
-            }}
-          >
-            <img
-              className="ball-asset"
-              src={BOUNCING_IMAGE_SOURCES[(NUM_BALLS + i) % BOUNCING_IMAGE_SOURCES.length]}
-              alt=""
-              draggable={false}
-            />
+          <div className="sparkles" />
+
+          <div className="birthday-text">
+            <div className="birthday-main">Happy Birthday</div>
+            <div className="birthday-main" style={{ fontSize: 'clamp(2.5rem, 6vw, 5.5rem)', marginTop: '-0.1em' }}>
+              to my beautiful
+            </div>
+            <div className="birthday-main birthday-name">
+              meluhhhhhh
+            </div>
+            <span className="birthday-hearts">👽 💕 👽</span>
+            <div className="birthday-sub">love from your very coool alien boyfriend</div>
           </div>
-        ))}
-      </div>
 
-      <div ref={cursorRef} className="cursor" style={{ position: 'fixed', top: 0, left: 0, pointerEvents: 'none', zIndex: 9999 }}>
-        <img src={CURSOR_IMAGE_SRC} alt="" draggable={false} />
-      </div>
+          <div ref={containerRef} className="balls-container">
+            {Array.from({ length: NUM_BALLS }, (_, i) => (
+              <div
+                key={i}
+                ref={el => { ballElemsRef.current[i] = el }}
+                className="ball"
+                style={{
+                  width: BALL_SIZE,
+                  height: BALL_SIZE,
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  willChange: 'transform',
+                }}
+              >
+                <img
+                  className="ball-asset"
+                  src={BOUNCING_IMAGE_SOURCES[i % BOUNCING_IMAGE_SOURCES.length]}
+                  alt=""
+                  draggable={false}
+                />
+              </div>
+            ))}
+          </div>
+
+          <div className="front-balls-container" aria-hidden="true">
+            {Array.from({ length: FRONT_BALLS }, (_, i) => (
+              <div
+                key={i}
+                ref={el => { ballElemsRef.current[NUM_BALLS + i] = el }}
+                className="ball ball-front"
+                style={{
+                  width: FRONT_BALL_SIZE,
+                  height: FRONT_BALL_SIZE,
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  willChange: 'transform',
+                }}
+              >
+                <img
+                  className="ball-asset"
+                  src={BOUNCING_IMAGE_SOURCES[(NUM_BALLS + i) % BOUNCING_IMAGE_SOURCES.length]}
+                  alt=""
+                  draggable={false}
+                />
+              </div>
+            ))}
+          </div>
+
+          <div ref={cursorRef} className="cursor" style={{ position: 'fixed', top: 0, left: 0, pointerEvents: 'none', zIndex: 9999 }}>
+            <img src={CURSOR_IMAGE_SRC} alt="" draggable={false} />
+          </div>
+        </>
+      )}
     </>
   )
 }
