@@ -11,6 +11,8 @@ const FLYING_RECTANGLE_COUNT = 44
 const FLYING_RECTANGLES_ON_SCREEN = 4
 
 const CELEB_SOUND_COUNT = 10
+const PRESENT_START_DELAY_MS = 1_000
+
 const CURSOR_IMAGE_SRC = `${import.meta.env.BASE_URL}assets/mouse-cursor.png`
 const PRESENT_IMAGE_SRC = `${import.meta.env.BASE_URL}assets/present.png`
 const MUSIC_SRC = `${import.meta.env.BASE_URL}assets/dancelounge.mp3`
@@ -218,6 +220,7 @@ export default function BirthdayPage() {
   const confettiTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const musicRef = useRef<HTMLAudioElement | null>(null)
   const openingStartedRef = useRef(false)
+  const presentStartTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const spawnTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const hidePresentTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const nyanCatTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -245,7 +248,7 @@ export default function BirthdayPage() {
 
   const playRandomCelebSound = useCallback(() => {
     const audio = new Audio(`${import.meta.env.BASE_URL}assets/celeb${Math.floor(Math.random() * CELEB_SOUND_COUNT) + 1}.mp3`)
-    audio.volume = 0.7
+    audio.volume = 0.5
     void audio.play()
   }, [])
 
@@ -302,24 +305,32 @@ export default function BirthdayPage() {
 
       e.preventDefault()
       openingStartedRef.current = true
-      setOpeningStarted(true)
+
       playRandomCelebSound()
       void startMusic().catch(() => {})
 
-      spawnTimerRef.current = setTimeout(() => {
-        setFlyingImageItems(createFlyingImageItems())
-        setCelebrationStarted(true)
-      }, 500)
+      presentStartTimerRef.current = setTimeout(() => {
+        setOpeningStarted(true)
 
-      hidePresentTimerRef.current = setTimeout(() => {
-        setPresentVisible(false)
-      }, 1000)
+        spawnTimerRef.current = setTimeout(() => {
+          setFlyingImageItems(createFlyingImageItems())
+          setCelebrationStarted(true)
+        }, 500)
+
+        hidePresentTimerRef.current = setTimeout(() => {
+          setPresentVisible(false)
+        }, 1000)
+      }, PRESENT_START_DELAY_MS)
     }
 
     window.addEventListener('keydown', onKeyDown)
 
     return () => {
       window.removeEventListener('keydown', onKeyDown)
+
+      if (presentStartTimerRef.current) {
+        clearTimeout(presentStartTimerRef.current)
+      }
 
       if (spawnTimerRef.current) {
         clearTimeout(spawnTimerRef.current)
