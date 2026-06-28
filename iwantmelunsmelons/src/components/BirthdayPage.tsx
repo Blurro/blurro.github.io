@@ -36,7 +36,8 @@ const PASTEL_COLORS = [
 const NUM_BALLS = 8
 const FRONT_BALLS = 3
 const BALL_SIZE = 104
-const FRONT_BALL_SIZE = BALL_SIZE * 2
+const FRONT_BALL_MAX_SIZE = BALL_SIZE * 2
+const FRONT_BALL_MIN_SIZE = BALL_SIZE * 1.1
 const TOTAL_BALLS = NUM_BALLS + FRONT_BALLS
 const CURSOR_RADIUS = 10
 
@@ -82,6 +83,16 @@ interface NyanCatFlyby {
 
 function randomBetween(a: number, b: number) {
   return a + Math.random() * (b - a)
+}
+
+function getFrontBallSize(width: number, height: number) {
+  return Math.max(
+    FRONT_BALL_MIN_SIZE,
+    Math.min(
+      FRONT_BALL_MAX_SIZE,
+      Math.min(width, height) * 0.4,
+    ),
+  )
 }
 
 function getFlyingRectangleSrc(i: number) {
@@ -148,9 +159,11 @@ function createFlyingImageItems(): FlyingImageItem[] {
 }
 
 function createBalls(width: number, height: number): Ball[] {
+  const frontBallSize = getFrontBallSize(width, height)
+
   return Array.from({ length: TOTAL_BALLS }, (_, i) => {
     const frontLayer = i >= NUM_BALLS
-    const size = frontLayer ? FRONT_BALL_SIZE : BALL_SIZE
+    const size = frontLayer ? frontBallSize : BALL_SIZE
     const speed = frontLayer ? randomBetween(1.1, 2.1) : randomBetween(2.2, 4.5)
     const angle = Math.random() * Math.PI * 2
 
@@ -264,6 +277,7 @@ export default function BirthdayPage() {
   const [openingStarted, setOpeningStarted] = useState(false)
   const [presentVisible, setPresentVisible] = useState(true)
   const [celebrationStarted, setCelebrationStarted] = useState(false)
+  const [frontBallSize, setFrontBallSize] = useState(FRONT_BALL_MAX_SIZE)
   const [flyingImageItems, setFlyingImageItems] = useState<FlyingImageItem[]>([])
   const [nyanCat, setNyanCat] = useState<NyanCatFlyby | null>(null)
 
@@ -401,16 +415,21 @@ export default function BirthdayPage() {
   }, [celebrationStarted])
 
   useEffect(() => {
-    const onMouseMove = (e: MouseEvent) => {
-      mouseRef.current = { x: e.clientX, y: e.clientY }
+    const updatePointerPosition = (x: number, y: number) => {
+      mouseRef.current = { x, y }
 
       if (cursorRef.current) {
-        cursorRef.current.style.left = `${e.clientX}px`
-        cursorRef.current.style.top = `${e.clientY}px`
+        cursorRef.current.style.left = `${x}px`
+        cursorRef.current.style.top = `${y}px`
       }
     }
 
-    const onPointerDown = () => {
+    const onPointerMove = (e: PointerEvent) => {
+      updatePointerPosition(e.clientX, e.clientY)
+    }
+
+    const onPointerDown = (e: PointerEvent) => {
+      updatePointerPosition(e.clientX, e.clientY)
       playPointerClickSound()
 
       if (openingStartedRef.current || celebrationStartedRef.current) return
@@ -422,11 +441,11 @@ export default function BirthdayPage() {
       }
     }
 
-    window.addEventListener('mousemove', onMouseMove)
+    window.addEventListener('pointermove', onPointerMove, { passive: true })
     window.addEventListener('pointerdown', onPointerDown)
 
     return () => {
-      window.removeEventListener('mousemove', onMouseMove)
+      window.removeEventListener('pointermove', onPointerMove)
       window.removeEventListener('pointerdown', onPointerDown)
     }
   }, [playPointerClickSound, startOpeningSequence])
@@ -505,6 +524,9 @@ export default function BirthdayPage() {
 
     const w = window.innerWidth
     const h = window.innerHeight
+    const currentFrontBallSize = getFrontBallSize(w, h)
+
+    setFrontBallSize(currentFrontBallSize)
     ballsRef.current = createBalls(w, h)
 
     const sparklesEl = document.querySelector('.sparkles')
@@ -709,8 +731,8 @@ export default function BirthdayPage() {
                 ref={el => { ballElemsRef.current[NUM_BALLS + i] = el }}
                 className="ball ball-front"
                 style={{
-                  width: FRONT_BALL_SIZE,
-                  height: FRONT_BALL_SIZE,
+                  width: frontBallSize,
+                  height: frontBallSize,
                   position: 'absolute',
                   top: 0,
                   left: 0,
