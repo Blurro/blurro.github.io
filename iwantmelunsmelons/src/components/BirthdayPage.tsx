@@ -37,7 +37,7 @@ const NUM_BALLS = 8
 const FRONT_BALLS = 3
 const BALL_SIZE = 104
 const FRONT_BALL_MAX_SIZE = BALL_SIZE * 2
-const FRONT_BALL_MIN_SIZE = BALL_SIZE * 1.1
+const FRONT_BALL_MIN_SIZE = BALL_SIZE * 1.35
 const TOTAL_BALLS = NUM_BALLS + FRONT_BALLS
 const CURSOR_RADIUS = 10
 
@@ -90,7 +90,7 @@ function getFrontBallSize(width: number, height: number) {
     FRONT_BALL_MIN_SIZE,
     Math.min(
       FRONT_BALL_MAX_SIZE,
-      Math.min(width, height) * 0.4,
+      Math.min(width, height) * 0.5,
     ),
   )
 }
@@ -165,7 +165,19 @@ function createBalls(width: number, height: number): Ball[] {
     const frontLayer = i >= NUM_BALLS
     const size = frontLayer ? frontBallSize : BALL_SIZE
     const speed = frontLayer ? randomBetween(1.1, 2.1) : randomBetween(2.2, 4.5)
-    const angle = Math.random() * Math.PI * 2
+
+    const safeFrontAngles = [
+      randomBetween(20, 70),
+      randomBetween(110, 160),
+      randomBetween(200, 250),
+      randomBetween(290, 340),
+    ]
+
+    const angleDeg = frontLayer
+      ? safeFrontAngles[Math.floor(Math.random() * safeFrontAngles.length)]
+      : Math.random() * 360
+
+    const angle = angleDeg * Math.PI / 180
 
     return {
       id: i,
