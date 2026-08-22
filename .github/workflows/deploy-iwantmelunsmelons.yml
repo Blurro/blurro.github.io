@@ -48,6 +48,9 @@ jobs:
 
           cp -a iwantmelunsmelons/dist/client/. _site/iwantmelunsmelons/
 
+          mkdir -p _site/sysplugins/online_v1
+          cp sysplugins/online_v1/onlineblurrotemporary.3on _site/sysplugins/online_v1/onlineblurrotemporary.3on
+
           if [ -f "_site/iwantmelunsmelons/_shell.html" ]; then
             cp "_site/iwantmelunsmelons/_shell.html" "_site/iwantmelunsmelons/index.html"
             cp "_site/iwantmelunsmelons/_shell.html" "_site/iwantmelunsmelons/404.html"
