@@ -1,0 +1,6 @@
+MENU00000065;https://blurro.github.io/sysplugins/online_v1/menu_r.bin
+blur00000065;https://blurro.github.io/sysplugins/online_v1/blur_r.bin
+coin00000065;https://blurro.github.io/sysplugins/online_v1/coin_r.bin
+powr00000065;https://blurro.github.io/sysplugins/online_v1/powr_r.bin
+ctgp00000065;https://blurro.github.io/sysplugins/online_v1/ctgp_r.bin
+coin00000065:https://blurro.github.io/sysplugins/online_v1/coin_l.bin
