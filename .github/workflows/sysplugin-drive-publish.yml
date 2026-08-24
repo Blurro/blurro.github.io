@@ -37,8 +37,8 @@ jobs:
               exit 1
             fi
             case "$destination" in
-              sysplugins/online_dev/*|sysplugins/online_v1/*) ;;
-              *) echo "Destination outside temporary online publish lanes: $destination" >&2; exit 1 ;;
+              sysplugins/online_dev/*) ;;
+              *) echo "Destination outside online_dev: $destination" >&2; exit 1 ;;
             esac
             case "$destination" in
               *..*|*\\*) echo "Unsafe destination: $destination" >&2; exit 1 ;;
