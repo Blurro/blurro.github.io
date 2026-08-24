@@ -1,0 +1,79 @@
+name: Sysplugin Drive publisher
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/sysplugin-drive-request.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download, verify, and stage requested files
+        shell: bash
+        run: |
+          set -euo pipefail
+          request='.github/sysplugin-drive-request.txt'
+          changed=0
+
+          while IFS='|' read -r file_id expected_sha destination; do
+            [[ -z "${file_id// }" || "$file_id" == \#* ]] && continue
+
+            if [[ ! "$file_id" =~ ^[A-Za-z0-9_-]+$ ]]; then
+              echo "Invalid Drive file ID: $file_id" >&2
+              exit 1
+            fi
+            if [[ ! "$expected_sha" =~ ^[0-9A-Fa-f]{64}$ ]]; then
+              echo "Invalid SHA-256 for $destination" >&2
+              exit 1
+            fi
+            case "$destination" in
+              sysplugins/online_v1/*) ;;
+              *) echo "Destination outside online_v1: $destination" >&2; exit 1 ;;
+            esac
+            case "$destination" in
+              *..*|*\\*) echo "Unsafe destination: $destination" >&2; exit 1 ;;
+            esac
+
+            tmp="$(mktemp)"
+            url="https://drive.usercontent.google.com/download?id=${file_id}&export=download&confirm=t"
+            curl --fail --location --retry 3 --silent --show-error "$url" --output "$tmp"
+
+            actual_sha="$(sha256sum "$tmp" | awk '{print $1}')"
+            expected_sha="${expected_sha,,}"
+            if [[ "$actual_sha" != "$expected_sha" ]]; then
+              echo "SHA-256 mismatch for $destination" >&2
+              echo "expected: $expected_sha" >&2
+              echo "actual:   $actual_sha" >&2
+              exit 1
+            fi
+
+            mkdir -p "$(dirname "$destination")"
+            mv -f "$tmp" "$destination"
+            git add -- "$destination"
+            changed=1
+          done < "$request"
+
+          if [[ "$changed" -eq 0 ]]; then
+            echo 'No publish entries.'
+            exit 0
+          fi
+
+          if git diff --cached --quiet; then
+            echo 'Requested files already match GitHub.'
+            exit 0
+          fi
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Publish sysplugin artifacts from Drive'
+          git push
