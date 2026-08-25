@@ -1,0 +1,188 @@
+name: Publish sysplugins v1.00
+
+on:
+  push:
+    branches:
+      - sysplugins-v100-publish-20260825-1931
+    paths:
+      - '.github/workflows/sysplugins-v100-publish-20260825.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout staging branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Reassemble and verify transfer bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .sysplugins-transfer/part* | base64 --decode > "$RUNNER_TEMP/sysplugins-v100-delta-bundle.bin"
+          echo '822f28a2cf5e0727456120f3b1d4df5e55f24e657663ee0972268a34142bebe2  '"$RUNNER_TEMP/sysplugins-v100-delta-bundle.bin" | sha256sum -c -
+
+      - name: Verify live base and switch to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          EXPECTED_BASE=d2f07823861ca486b67414a1796afc9eb8ec2ee7
+          ACTUAL_BASE="$(git rev-parse origin/main)"
+          test "$ACTUAL_BASE" = "$EXPECTED_BASE" || { echo "main moved: expected $EXPECTED_BASE got $ACTUAL_BASE"; exit 1; }
+          git checkout -B main origin/main
+
+      - name: Reconstruct audited v1.00 payloads
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, struct, zlib, shutil
+
+          root = Path('.')
+          dev = root / 'sysplugins/online_dev'
+          v1 = root / 'sysplugins/online_v1'
+          bundle_path = Path('/home/runner/work/_temp/sysplugins-v100-delta-bundle.bin')
+          if not bundle_path.exists():
+              import os
+              bundle_path = Path(os.environ['RUNNER_TEMP']) / 'sysplugins-v100-delta-bundle.bin'
+
+          expected_old = {
+              'menu_r.bin': '29a8845a321b792541570b0b613b540bb4762ef592a4cace27dc113ba492b3cf',
+              'Playcoinz.10.3nx': 'ad3539394c20723ab00f9b1f792f15afc36eaaa5a25044f3cdcf10c7aa5061c5',
+              'PowerPrevent.60.3nx': 'e654a5eb1b8cd5075d0dc77e183d70f8eb41e637ea0137e7b40376d552d61d21',
+              'blur_r.bin': '2795b00246bc18a072df168e23e9fc6fcc6ed9364bc5a8d57598094ce0dd9e6e',
+              'coin_r.bin': '37c81b3f04e1bc04aa40aae391ea36f5985128ffe2b0a62b3ac29fac5dc0ec8e',
+              'onlinetemporary.3on': 'bc3cb361437a5e27c8002249fa9f9575c5b3ea370e6963133f78651320415aa5',
+          }
+          expected_new = {
+              'menu_r.bin': '5e415abfcac8f32d8902067c503d08757977adb5ecbf401649ca1f4689405ea4',
+              'Playcoinz.10.3nx': '1cefd93a2eef28a772ae4cd31c4c4bc8974f9e50a7d484f5b91ad2ef1df8fbdf',
+              'PowerPrevent.60.3nx': '91f2892524fd7401733f123b5f28a42d8cc8c2136af9c80ff043274b754cbb3f',
+              'blur_r.bin': '40598dcc5ab583b29828dda3a0b7144849b7dd277e8d68b4d5ee877af41ee3f4',
+              'coin_r.bin': '2ee736180ba5ab9e9a8549372e57e60424c693f64d5162b5d1cc42c50deb1838',
+              'onlinetemporary.3on': '0abc6d5b63a41c377e0e313b640bdb5e4856f8638d4229d9a4dee1d6730811ee',
+          }
+
+          def sha256(data):
+              return hashlib.sha256(data).hexdigest()
+
+          b = bundle_path.read_bytes()
+          pos = 0
+          assert b[:4] == b'BND1'
+          pos = 4
+          count, = struct.unpack_from('<I', b, pos); pos += 4
+          assert count == len(expected_new), count
+          patches = {}
+          for _ in range(count):
+              nlen, = struct.unpack_from('<H', b, pos); pos += 2
+              name = b[pos:pos+nlen].decode('utf-8'); pos += nlen
+              plen, = struct.unpack_from('<I', b, pos); pos += 4
+              patches[name] = zlib.decompress(b[pos:pos+plen]); pos += plen
+          assert pos == len(b)
+          assert set(patches) == set(expected_new)
+
+          def apply_patch(old, p):
+              assert p[:4] == b'DPCH'
+              block_size, new_size = struct.unpack_from('<II', p, 4)
+              assert block_size == 16
+              q = 12
+              out = bytearray()
+              while True:
+                  op = p[q:q+1]; q += 1
+                  if op == b'E':
+                      break
+                  if op == b'C':
+                      off, length = struct.unpack_from('<II', p, q); q += 8
+                      out += old[off:off+length]
+                  elif op == b'L':
+                      length, = struct.unpack_from('<I', p, q); q += 4
+                      out += p[q:q+length]; q += length
+                  else:
+                      raise RuntimeError(f'bad patch opcode {op!r}')
+              assert q == len(p)
+              assert len(out) == new_size
+              return bytes(out)
+
+          for name, patch in patches.items():
+              old_path = dev / name
+              old = old_path.read_bytes()
+              got_old = sha256(old)
+              assert got_old == expected_old[name], (name, got_old, expected_old[name])
+              new = apply_patch(old, patch)
+              got_new = sha256(new)
+              assert got_new == expected_new[name], (name, got_new, expected_new[name])
+              old_path.write_bytes(new)
+              (v1 / name).write_bytes(new)
+
+          # Files whose updater payload is intentionally identical to another audited output.
+          menu = (dev / 'menu_r.bin').read_bytes()
+          power = (dev / 'PowerPrevent.60.3nx').read_bytes()
+          for lane in (dev, v1):
+              (lane / 'ModMenu.0.3nx').write_bytes(menu)
+              (lane / 'powr_r.bin').write_bytes(power)
+
+          # Loader Coin did not change byte-for-byte. Use the audited DEV copy as source of truth.
+          coin_l = (dev / 'coin_l.bin').read_bytes()
+          assert sha256(coin_l) == 'dcaf8c1bb2b3c855375a2fb2c534e880f4cde2f0a768200bcd73c4b12c5ae749'
+          (v1 / 'coin_l.bin').write_bytes(coin_l)
+
+          # CTGP remains closed source and unchanged. Mirror the already hosted DEV binaries into V1.
+          for name in ('CTGP7.70.3nx', 'ctgp_r.bin'):
+              data = (dev / name).read_bytes()
+              assert data, name
+              (v1 / name).write_bytes(data)
+
+          dev_updates = '''MENU00000064;https://blurro.github.io/sysplugins/online_dev/menu_r.bin
+          blur00000064;https://blurro.github.io/sysplugins/online_dev/blur_r.bin
+          coin00000064;https://blurro.github.io/sysplugins/online_dev/coin_r.bin
+          powr00000064;https://blurro.github.io/sysplugins/online_dev/powr_r.bin
+          ctgp00000064;https://blurro.github.io/sysplugins/online_dev/ctgp_r.bin
+          coin00000064:https://blurro.github.io/sysplugins/online_dev/coin_l.bin
+          '''.replace('          ', '')
+          v1_updates = dev_updates.replace('/online_dev/', '/online_v1/')
+          dev_stacks = '''03blur;coin:coin;https://blurro.github.io/sysplugins/online_dev/Playcoinz.10.3nx
+          01powr;https://blurro.github.io/sysplugins/online_dev/PowerPrevent.60.3nx
+          02blur;ctgp;https://blurro.github.io/sysplugins/online_dev/CTGP7.70.3nx
+          '''.replace('          ', '')
+          v1_stacks = dev_stacks.replace('/online_dev/', '/online_v1/')
+          (dev / 'plgupdates.txt').write_text(dev_updates, encoding='utf-8')
+          (v1 / 'plgupdates.txt').write_text(v1_updates, encoding='utf-8')
+          (dev / 'plgstacks.txt').write_text(dev_stacks, encoding='utf-8')
+          (v1 / 'plgstacks.txt').write_text(v1_stacks, encoding='utf-8')
+
+          # The helper is embedded by MENU now. It must not be separately hosted.
+          for p in (dev / 'httpslib.3on', v1 / 'httpslib.3on'):
+              if p.exists(): p.unlink()
+
+          # Final lane and digest audit.
+          same_names = [
+              'ModMenu.0.3nx','menu_r.bin','Playcoinz.10.3nx','PowerPrevent.60.3nx',
+              'powr_r.bin','blur_r.bin','coin_r.bin','coin_l.bin','onlinetemporary.3on',
+              'CTGP7.70.3nx','ctgp_r.bin'
+          ]
+          for name in same_names:
+              assert (dev / name).read_bytes() == (v1 / name).read_bytes(), name
+          assert sha256((dev/'ModMenu.0.3nx').read_bytes()) == expected_new['menu_r.bin']
+          assert sha256((dev/'powr_r.bin').read_bytes()) == expected_new['PowerPrevent.60.3nx']
+          for name, digest in expected_new.items():
+              assert sha256((dev/name).read_bytes()) == digest, name
+          print('All sysplugin payload and manifest checks passed.')
+          PY
+
+      - name: Commit both online lanes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A sysplugins/online_dev sysplugins/online_v1
+          git diff --cached --check
+          git status --short
+          git commit -m 'Reset sysplugins to v1.00 in dev and v1'
+          git push origin main
