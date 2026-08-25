@@ -1,0 +1,31 @@
+name: Temporary sysplugin old binary export
+
+on:
+  push:
+    branches:
+      - sysplugins-v100-publish-20260825-1931
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pack current hosted DEV payloads
+        run: |
+          mkdir -p "$RUNNER_TEMP/old"
+          cp sysplugins/online_dev/menu_r.bin "$RUNNER_TEMP/old/"
+          cp sysplugins/online_dev/Playcoinz.10.3nx "$RUNNER_TEMP/old/"
+          cp sysplugins/online_dev/PowerPrevent.60.3nx "$RUNNER_TEMP/old/"
+          cp sysplugins/online_dev/blur_r.bin "$RUNNER_TEMP/old/"
+          cp sysplugins/online_dev/coin_r.bin "$RUNNER_TEMP/old/"
+          cp sysplugins/online_dev/onlinetemporary.3on "$RUNNER_TEMP/old/"
+          tar -C "$RUNNER_TEMP/old" -czf "$RUNNER_TEMP/sysplugins-old-dev.tar.gz" .
+          sha256sum "$RUNNER_TEMP/sysplugins-old-dev.tar.gz"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sysplugins-old-dev-20260825
+          path: ${{ runner.temp }}/sysplugins-old-dev.tar.gz
+          retention-days: 1
