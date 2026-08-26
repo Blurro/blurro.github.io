@@ -1,3 +1,2 @@
-# Sysplugin Drive publish request 2026-08-25 23:53 Europe/London
-12SIIt4JqgAC19-3cisv-MZUTsvgfVWQT|6282fbce1254150d1b52ed600cbbbdc4c1364e4a8f85ea670cb5fce7ff5d8dd6|sysplugins/online_dev/ModMenu.0.3nx
-1FMOWC-8eEFPZTXGjZemvQjcjEtpiprBd|6282fbce1254150d1b52ed600cbbbdc4c1364e4a8f85ea670cb5fce7ff5d8dd6|sysplugins/online_dev/menu_r.bin
+# Sysplugin Drive publish request 2026-08-26 achievement sender DEV
+15tDuZpaNcNB0Nub5EtKJftxmBdJ_ZUYR|e49d9abfb966683116cdd7bd68a2e0e1252cc1d11b15b49f9313a70d6494f60b|sysplugins/online_dev/Playcoinz.10.3nx
