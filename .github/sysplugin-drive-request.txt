@@ -1,4 +1,2 @@
-# Sysplugin Drive publish request 2026-08-25 15:20 Europe/London
-1eHw6he3oEavKNYoYVNYAhwEepfLF3lWY|fc03de2815e15fdcacf24affa9b62357c1bbff4362211f07263408ae540828be|sysplugins/online_dev/menu_r.bin
-1MYAhAh6s7NkLK3i9cHyKyq7lr2PuUSzf|1f7c3dbeacf3ecf27141d6a401533db02bfad89a061d6613e49173ad20db938c|sysplugins/online_dev/httpslib.3on
-1IewZtmeYGjyHUBPnY2wp2E58csD4YHZD|c9c862283ec8a0e98f4585d2b7328c10da0db9784117103cb440e87f6101bb79|sysplugins/online_dev/plgupdates.txt
+# Sysplugin Drive publish request 2026-08-26 15:25 Europe/London
+1qtP3bU_Ua78mUFyv_OVv-w1bNUFX3c8h|9332a7e34743c9bdd2aab5e8ae5b9b7aabaeebea4c81d98f7c823c596629a279|sysplugins/online_dev/Playcoinz.10.3nx
