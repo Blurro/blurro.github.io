@@ -1,3 +1,18 @@
-03blur;coin:coin;https://blurro.github.io/sysplugins/online_dev/Playcoinz.10.3nx
-01powr;https://blurro.github.io/sysplugins/online_dev/PowerPrevent.60.3nx
-02blur;ctgp;https://blurro.github.io/sysplugins/online_dev/CTGP7.70.3nx
+Sysplugin Menu
+ModMenu.0.3nx
+R:MENU
+
+Playcoinz
+Playcoinz.10.3nx
+R:blur
+L:coin
+R:coin
+
+PowerPrevent
+PowerPrevent.60.3nx
+R:powr
+
+CTGP-7
+CTGP7.70.3nx
+R:blur
+R:ctgp
