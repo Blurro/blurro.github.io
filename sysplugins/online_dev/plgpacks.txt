@@ -1,9 +1,9 @@
 MENU00000065;https://blurro.github.io/sysplugins/online_dev/menu_r.bin
-blur00000064;https://blurro.github.io/sysplugins/online_dev/blur_r.bin
-coin00000064;https://blurro.github.io/sysplugins/online_dev/coin_r.bin
-powr00000065;https://blurro.github.io/sysplugins/online_dev/powr_r.bin
+blur00000065;https://blurro.github.io/sysplugins/online_dev/blur_r.bin
+coin00000065;https://blurro.github.io/sysplugins/online_dev/coin_r.bin
+powr00000064;https://blurro.github.io/sysplugins/online_dev/powr_r.bin
 ctgp00000064;https://blurro.github.io/sysplugins/online_dev/ctgp_r.bin
-coin00000064:https://blurro.github.io/sysplugins/online_dev/coin_l.bin
+coin00000065:https://blurro.github.io/sysplugins/online_dev/coin_l.bin
 ---
 Sysplugin Menu
 ModMenu.0.3nx
