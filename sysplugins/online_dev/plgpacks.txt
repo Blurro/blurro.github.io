@@ -8,26 +8,31 @@ coin00000065:https://blurro.github.io/sysplugins/online_dev/coin_l.bin
 Sysplugin Menu
 ModMenu.0.3nx
 1
-Core menu for managing installed sysplugins.
+Core menu for managing installed Sysplugins.
 R:MENU
 
 Playcoinz
 Playcoinz.10.3nx
-1
-Play Coin controls, tracking and achievements.
+2
+Play Coins with uncapped daily, uncapped
+total, and secrets to earn through walking!
 R:blur
 L:coin
 R:coin
 
 PowerPrevent
 PowerPrevent.60.3nx
-1
+2
 Prevents power-off unless START is held.
+Luma fork originally created by WerWolv.
 R:powr
 
 CTGP-7
 CTGP7.70.3nx
-1
-Compatibility and diagnostics for CTGP-7.
+4
+'Unknown Luma3DS' bypass for CTGP-7!
+Includes features like rainbow shells -
+has a menu to toggle custom patches.
+Message @blurro if this is ever outdated.
 R:blur
 R:ctgp
