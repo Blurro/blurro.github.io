@@ -59,3 +59,5 @@ jobs:
           git add -- sysplugins/online_dev/menu_r.bin sysplugins/online_dev/plgpacks.txt
           git commit -m 'Revert MENU metadata to v1.01'
           git push
+
+# trigger
