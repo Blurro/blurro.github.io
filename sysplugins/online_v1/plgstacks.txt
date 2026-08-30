@@ -1,3 +1,0 @@
-03blur;coin:coin;https://blurro.github.io/sysplugins/online_v1/Playcoinz.10.3nx
-01powr;https://blurro.github.io/sysplugins/online_v1/PowerPrevent.60.3nx
-02blur;ctgp;https://blurro.github.io/sysplugins/online_v1/CTGP7.70.3nx

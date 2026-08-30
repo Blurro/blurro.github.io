@@ -1,0 +1,38 @@
+MENU00000065;https://blurro.github.io/sysplugins/online_dev/menu_r.bin
+blur00000065;https://blurro.github.io/sysplugins/online_dev/blur_r.bin
+coin00000065;https://blurro.github.io/sysplugins/online_dev/coin_r.bin
+powr00000064;https://blurro.github.io/sysplugins/online_dev/powr_r.bin
+ctgp00000064;https://blurro.github.io/sysplugins/online_dev/ctgp_r.bin
+coin00000065:https://blurro.github.io/sysplugins/online_dev/coin_l.bin
+---
+Sysplugin Menu
+ModMenu.0.3nx
+1
+Core menu for managing installed Sysplugins.
+R:MENU
+
+Playcoinz
+Playcoinz.10.3nx
+2
+Play Coins with uncapped daily, uncapped
+total, and secrets to earn through walking!
+R:blur
+L:coin
+R:coin
+
+PowerPrevent
+PowerPrevent.60.3nx
+2
+Prevents power-off unless START is held.
+Luma fork originally created by WerWolv.
+R:powr
+
+CTGP-7
+CTGP7.70.3nx
+4
+Compatibility with CTGP-7!
+Includes features like rainbow shells -
+has a menu to toggle custom patches.
+Message @blurro if this is ever outdated.
+R:blur
+R:ctgp
