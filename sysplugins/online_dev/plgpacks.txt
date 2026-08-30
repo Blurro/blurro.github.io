@@ -30,7 +30,7 @@ R:powr
 CTGP-7
 CTGP7.70.3nx
 4
-'Unknown Luma3DS' bypass for CTGP-7!
+Compatibility with CTGP-7!
 Includes features like rainbow shells -
 has a menu to toggle custom patches.
 Message @blurro if this is ever outdated.
