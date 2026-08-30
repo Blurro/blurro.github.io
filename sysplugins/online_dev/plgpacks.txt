@@ -3,7 +3,7 @@ blur00000065;https://blurro.github.io/sysplugins/online_dev/blur_r.bin
 coin00000067;https://blurro.github.io/sysplugins/online_dev/coin_r.bin
 powr00000064;https://blurro.github.io/sysplugins/online_dev/powr_r.bin
 ctgp00000064;https://blurro.github.io/sysplugins/online_dev/ctgp_r.bin
-m7ss00000067:https://blurro.github.io/sysplugins/online_dev/m7ss_l.bin
+m7ss00000068:https://blurro.github.io/sysplugins/online_dev/m7ss_l.bin
 coin00000067:https://blurro.github.io/sysplugins/online_dev/coin_l.bin
 ---
 Sysplugin Menu
