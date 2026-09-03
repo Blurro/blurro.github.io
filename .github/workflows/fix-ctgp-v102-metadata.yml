@@ -17,42 +17,53 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Patch and verify CTGP v1.02 payloads
+      - name: Restore proven CTGP payload and fix metadata
         shell: bash
         run: |
           set -euo pipefail
+          git show 45c6dc029b9602d6df03436d32bc15754a2671a4:sysplugins/online_dev/ctgp_r.bin > /tmp/ctgp_r.bin
           python - <<'PY'
           from pathlib import Path
           import hashlib
 
-          paths = [
-              Path("sysplugins/online_v1/ctgp_r.bin"),
-              Path("sysplugins/online_dev/ctgp_r.bin"),
-          ]
+          src = Path("/tmp/ctgp_r.bin")
+          data = bytearray(src.read_bytes())
+
+          if len(data) != 50528:
+              raise SystemExit(f"historical CTGP payload: unexpected size {len(data)}")
+
+          bad_sha = hashlib.sha256(data).hexdigest()
+          expected_bad_sha = "96a3a4ebdec827fb7bfb8e74faa8cd418564c0939cad1d9a7d7233e5817cc270"
+          if bad_sha != expected_bad_sha:
+              raise SystemExit(f"historical CTGP payload SHA mismatch: {bad_sha}")
 
           offset = 0xC550
           expected_old = bytes.fromhex("01 02 00 00 00")
           replacement  = bytes.fromhex("33 4E 58 56 66")
-          expected_sha = "878dc4cf2f0ac4b223d9bbaa631d7c90c79f739b40629ff9d7504b2763579707"
 
-          for path in paths:
-              data = bytearray(path.read_bytes())
-              if len(data) != 50528:
-                  raise SystemExit(f"{path}: unexpected size {len(data)}")
-              old = bytes(data[offset:offset+5])
-              if old != expected_old:
-                  raise SystemExit(f"{path}: unexpected old bytes at 0x{offset:X}: {old.hex()}")
-              data[offset:offset+5] = replacement
-              sha = hashlib.sha256(data).hexdigest()
-              if sha != expected_sha:
-                  raise SystemExit(f"{path}: SHA mismatch after patch: {sha}")
-              # Full required metadata tail: 3NXV + LE u32 102 + zero padding to 16 bytes.
-              if bytes(data[-16:]) != bytes.fromhex(
-                  "33 4E 58 56 66 00 00 00 00 00 00 00 00 00 00 00"
-              ):
-                  raise SystemExit(f"{path}: invalid final metadata tail")
-              path.write_bytes(data)
-              print(f"{path}: fixed {sha}")
+          old = bytes(data[offset:offset+5])
+          if old != expected_old:
+              raise SystemExit(f"unexpected old bytes at 0x{offset:X}: {old.hex()}")
+
+          data[offset:offset+5] = replacement
+
+          expected_tail = bytes.fromhex(
+              "33 4E 58 56 66 00 00 00 00 00 00 00 00 00 00 00"
+          )
+          if bytes(data[-16:]) != expected_tail:
+              raise SystemExit(f"invalid final metadata tail: {bytes(data[-16:]).hex()}")
+
+          good_sha = hashlib.sha256(data).hexdigest()
+          expected_good_sha = "878dc4cf2f0ac4b223d9bbaa631d7c90c79f739b40629ff9d7504b2763579707"
+          if good_sha != expected_good_sha:
+              raise SystemExit(f"fixed CTGP payload SHA mismatch: {good_sha}")
+
+          for name in (
+              "sysplugins/online_v1/ctgp_r.bin",
+              "sysplugins/online_dev/ctgp_r.bin",
+          ):
+              Path(name).write_bytes(data)
+              print(f"{name}: {len(data)} bytes, sha256 {good_sha}")
           PY
 
       - name: Commit repair and remove one-shot workflow
@@ -60,8 +71,8 @@ jobs:
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git config user.email '41898278+github-actions[bot]@users.noreply.github.com'
           git add sysplugins/online_v1/ctgp_r.bin sysplugins/online_dev/ctgp_r.bin
           git rm .github/workflows/fix-ctgp-v102-metadata.yml
-          git commit -m 'Fix CTGP-7 v1.02 metadata header'
+          git commit -m 'Repair CTGP-7 v1.02 payload metadata'
           git push
