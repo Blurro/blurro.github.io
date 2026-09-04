@@ -30,8 +30,11 @@ R:powr
 
 IgnoreCfgNor
 IgnoreCfgNor.1.3nx
-1
-Ignores CFG:NOR checks without a Luma fork.
+4
+A Sysplugin of the ignore-cfgnor patch.
+This is ONLY for systems with a broken
+NVRAM and won't boot - otherwise IGNORE!
+Originally created by lifehackerhansol.
 L:CFGN
 
 CTGP-7
