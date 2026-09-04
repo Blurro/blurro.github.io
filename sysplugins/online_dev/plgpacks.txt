@@ -1,10 +1,10 @@
-MENU00000065;https://blurro.github.io/sysplugins/online_dev/menu_r.bin
+MENU00000066;https://blurro.github.io/sysplugins/online_dev/menu_r.bin
 blur00000065;https://blurro.github.io/sysplugins/online_dev/blur_r.bin
-coin00000067;https://blurro.github.io/sysplugins/online_dev/coin_r.bin
+coin00000068;https://blurro.github.io/sysplugins/online_dev/coin_r.bin
 powr00000064;https://blurro.github.io/sysplugins/online_dev/powr_r.bin
-ctgp00000066;https://blurro.github.io/sysplugins/online_dev/ctgp_r.bin
-m7ss0000006F:https://blurro.github.io/sysplugins/online_dev/m7ss_l.bin
-coin00000067:https://blurro.github.io/sysplugins/online_dev/coin_l.bin
+ctgp00000067;https://blurro.github.io/sysplugins/online_dev/ctgp_r.bin
+coin00000068:https://blurro.github.io/sysplugins/online_dev/coin_l.bin
+CFGN00000064:https://blurro.github.io/sysplugins/online_dev/cfgn_l.bin
 ---
 Sysplugin Menu
 ModMenu.0.3nx
@@ -28,6 +28,12 @@ Prevents power-off unless START is held.
 Luma fork originally created by WerWolv.
 R:powr
 
+IgnoreCfgNor
+IgnoreCfgNor.1.3nx
+1
+Ignores CFG:NOR checks without a Luma fork.
+L:CFGN
+
 CTGP-7
 CTGP7.70.3nx
 4
@@ -37,9 +43,3 @@ has a menu to toggle custom patches.
 Message @blurro if this is ever outdated.
 R:blur
 R:ctgp
-
-CTGP-7 Direct Boot
-CTGP7DirectBoot.60.3nx
-1
-Boots directly into CTGP-7 from MK7
-L:m7ss
