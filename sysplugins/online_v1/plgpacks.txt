@@ -2,7 +2,7 @@ MENU00000066;https://blurro.github.io/sysplugins/online_dev/menu_r.bin
 blur00000065;https://blurro.github.io/sysplugins/online_dev/blur_r.bin
 coin00000068;https://blurro.github.io/sysplugins/online_dev/coin_r.bin
 powr00000064;https://blurro.github.io/sysplugins/online_dev/powr_r.bin
-ctgp00000066;https://blurro.github.io/sysplugins/online_dev/ctgp_r.bin
+ctgp00000068;https://blurro.github.io/sysplugins/online_dev/ctgp_r.bin
 coin00000068:https://blurro.github.io/sysplugins/online_dev/coin_l.bin
 CFGN00000064:https://blurro.github.io/sysplugins/online_dev/cfgn_l.bin
 ---
