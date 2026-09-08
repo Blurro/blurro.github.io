@@ -5,7 +5,6 @@ powr00000065;https://blurro.github.io/sysplugins/online_dev/powr_r.bin
 ctgp00000069;https://blurro.github.io/sysplugins/online_dev/ctgp_r.bin
 helo00000065;https://blurro.github.io/sysplugins/online_dev/hello_r.bin
 coin00000069:https://blurro.github.io/sysplugins/online_dev/coin_l.bin
-CFGN00000065:https://blurro.github.io/sysplugins/online_dev/cfgn_l.bin
 ---
 Sysplugin Menu
 ModMenu.0.3nx
@@ -28,15 +27,6 @@ PowerPrevent.60.3nx
 Prevents power-off unless START is held.
 Luma fork originally created by WerWolv.
 R:powr
-
-IgnoreCfgNor
-IgnoreCfgNor.1.3nx
-4
-A Sysplugin of the ignore-cfgnor patch.
-This is ONLY for systems with a broken
-NVRAM and won't boot - otherwise IGNORE!
-Originally created by lifehackerhansol.
-L:CFGN
 
 CTGP-7
 CTGP7.70.3nx
