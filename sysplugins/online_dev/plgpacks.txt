@@ -4,7 +4,7 @@ coin0000006A;coin_r.bin
 coin0000006A:coin_l.bin
 powr00000065;powr_r.bin
 ctgp0000006A;ctgp_r.bin
-ctgp0000006A;ctgp_l.bin
+ctgp0000006A:ctgp_l.bin
 helo00000065;hello_r.bin
 ---
 Sysplugin Menu
