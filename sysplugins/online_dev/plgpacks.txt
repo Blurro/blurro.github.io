@@ -1,10 +1,11 @@
-MENU00000067;https://blurro.github.io/sysplugins/online_dev/menu_r.bin
-blur00000066;https://blurro.github.io/sysplugins/online_dev/blur_r.bin
-coin0000006A;https://blurro.github.io/sysplugins/online_dev/coin_r.bin
-powr00000065;https://blurro.github.io/sysplugins/online_dev/powr_r.bin
-ctgp00000069;https://blurro.github.io/sysplugins/online_dev/ctgp_r.bin
-helo00000065;https://blurro.github.io/sysplugins/online_dev/hello_r.bin
-coin0000006A:https://blurro.github.io/sysplugins/online_dev/coin_l.bin
+MENU00000067;menu_r.bin
+blur00000067;blur_r.bin
+coin0000006A;coin_r.bin
+coin0000006A:coin_l.bin
+powr00000065;powr_r.bin
+ctgp0000006A;ctgp_r.bin
+ctgp0000006A;ctgp_l.bin
+helo00000065;hello_r.bin
 ---
 Sysplugin Menu
 ModMenu.0.3nx
@@ -36,6 +37,7 @@ Includes features like rainbow shells -
 has a menu to toggle custom patches.
 Message @blurro if this is ever outdated.
 R:blur
+L:ctgp
 R:ctgp
 
 Hello World
