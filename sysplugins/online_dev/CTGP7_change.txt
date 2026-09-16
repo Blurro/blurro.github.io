@@ -1,0 +1,3 @@
+[v1.03]
+Added Loader-side patcher so that plugin
+loader is not required to be enabled.

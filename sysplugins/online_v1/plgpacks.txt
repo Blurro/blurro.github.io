@@ -49,7 +49,7 @@ Just an easy entry point for developers.
 R:helo
 
 FTP Server
-FTPAlwaysOn.80.3nx
+FTPServer.5000.3nx
 2
 Background FTP server for SD card transfers.
 Disable in Manage... when not in use!
