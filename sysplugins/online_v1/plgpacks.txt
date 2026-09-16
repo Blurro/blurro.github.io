@@ -6,6 +6,7 @@ powr00000065;powr_r.bin
 ctgp0000006A;ctgp_r.bin
 ctgp0000006A:ctgp_l.bin
 helo00000065;hello_r.bin
+ftpd00000064;ftpd_r.bin
 ---
 Sysplugin Menu
 ModMenu.0.3nx
@@ -46,3 +47,9 @@ HelloWorld.70.3nx
 Simple small plugin doing nothing useful.
 Just an easy entry point for developers.
 R:helo
+
+FTP Server
+FTPAlwaysOn.80.3nx
+1
+Background FTP server for SD card transfers.
+R:ftpd
