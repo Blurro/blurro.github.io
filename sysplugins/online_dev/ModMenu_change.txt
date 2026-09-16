@@ -3,5 +3,8 @@ New map/unmap guard so that aliases cannot
 land next to one another, causing a glitch
 when later using svcUnmapProcessMemoryEx.
 
+All Sysplugins should instead use this
+new API function.
+
 [v1.02]
 First upload!
