@@ -1,0 +1,5 @@
+[v1.06]
+Option to toggle progressive +3 steps per coin.
+(this disables achievements)
+Patched the vanilla-existing RTC black screen
+bug, and reimplemented prev-day catchup.

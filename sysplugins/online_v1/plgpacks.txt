@@ -50,6 +50,7 @@ R:helo
 
 FTP Server
 FTPAlwaysOn.80.3nx
-1
+2
 Background FTP server for SD card transfers.
+Disable in Manage... when not in use!
 R:ftpd
