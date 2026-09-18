@@ -1,2 +1,5 @@
+[v1.02]
+Fixed speeds and only allocates when in use.
+
 [v1.00]
 First upload!
