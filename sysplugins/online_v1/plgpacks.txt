@@ -1,10 +1,11 @@
-MENU00000067;menu_r.bin
+MENU00000068;menu_r.bin
+MENU00000068:menu_l.bin
 blur00000067;blur_r.bin
-coin0000006A;coin_r.bin
-coin0000006A:coin_l.bin
+coin0000006B;coin_r.bin
+coin0000006B:coin_l.bin
 powr00000065;powr_r.bin
-ctgp0000006A;ctgp_r.bin
-ctgp0000006A:ctgp_l.bin
+ctgp0000006B;ctgp_r.bin
+ctgp0000006B:ctgp_l.bin
 helo00000065;hello_r.bin
 ftpd00000066;ftpd_r.bin
 ---
@@ -13,8 +14,9 @@ ModMenu.0.3nx
 1
 Core menu for managing installed Sysplugins.
 R:MENU
+L:MENU
 
-Playcoinz
+PlayCoinz
 Playcoinz.10.3nx
 2
 Play Coins with uncapped daily, uncapped
