@@ -50,7 +50,8 @@ R:helo
 
 FTP Server
 FTPServer.5000.3nx
-2
+3
 Background FTP server for SD card transfers.
 Disable in Manage... when not in use!
+Originally created by mtheall.
 R:ftpd
