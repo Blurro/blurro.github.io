@@ -1,2 +1,1 @@
-1P9UL6L6OEsxEpbmlbWKy3nZ0bQNwd8G6|e3d74aa64ad5be64221a67e5ba4544b609e559df5905d112cc60c97e2ab3bbd4|sysplugins/online_dev/ftpd_r.bin
-1RaAw8M4pk8VDete9uUphMRr6adxeYg0k|77cab535169cba942b87fb315928c0bd3f1a4e8c7bb0bb5065d0b7d85e07f1c1|sysplugins/online_dev/plgpacks.txt
+# sync online_v1 FTP release from online_dev
