@@ -6,7 +6,7 @@ powr00000065;powr_r.bin
 ctgp0000006A;ctgp_r.bin
 ctgp0000006A:ctgp_l.bin
 helo00000065;hello_r.bin
-ftpd00000064;ftpd_r.bin
+ftpd00000065;ftpd_r.bin
 ---
 Sysplugin Menu
 ModMenu.0.3nx
