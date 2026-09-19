@@ -1,0 +1,58 @@
+name: Publish FTP queue fix
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/ftp-queuefix-payload.b64.xz'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Decode and publish verified FTP payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_file='.github/ftp-queuefix-payload.b64.xz'
+          destination='sysplugins/online_dev/ftpd_r.bin'
+          expected_old='7f9f6305b417095000511d19898446a91b7c043af493b30148acde42880f7d61'
+          expected_new='2eaeb784c3cea950147326a6eac83f09e971705fd6dcb0e51fa79c1232a5be7f'
+
+          old_sha="$(sha256sum "$destination" | awk '{print $1}')"
+          [[ "$old_sha" == "$expected_old" ]] || {
+            echo "Refusing to replace unexpected dev FTP payload: $old_sha" >&2
+            exit 1
+          }
+
+          tmp="$(mktemp)"
+          base64 --decode "$source_file" | xz --decompress --stdout > "$tmp"
+          new_sha="$(sha256sum "$tmp" | awk '{print $1}')"
+          [[ "$new_sha" == "$expected_new" ]] || {
+            echo "Decoded payload SHA mismatch: $new_sha" >&2
+            exit 1
+          }
+
+          git pull --rebase origin main
+          old_sha="$(sha256sum "$destination" | awk '{print $1}')"
+          [[ "$old_sha" == "$expected_old" ]] || {
+            echo "Dev FTP changed while publishing: $old_sha" >&2
+            exit 1
+          }
+
+          mv -f "$tmp" "$destination"
+          chmod 0644 "$destination"
+          git add -- "$destination"
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Publish FTP v1.02 queue fix to online_dev'
+          git push
