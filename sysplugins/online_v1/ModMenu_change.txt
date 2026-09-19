@@ -1,3 +1,10 @@
+[v1.04]
+New Loader-side MENU plugin, provides a
+bridge API for Loader-side plugins to talk
+to their Rosalina halves, alongside better
+process patching functions so that Sysplugins
+aren't stacking hooks on top of hooks.
+
 [v1.03]
 New map/unmap guard so that aliases cannot
 land next to one another, causing a glitch

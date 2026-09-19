@@ -1,3 +1,6 @@
+[v1.07]
+Uses the new MENU patching API.
+
 [v1.06]
 Option to toggle progressive +3 steps per coin.
 (this disables achievements)

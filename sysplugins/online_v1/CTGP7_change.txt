@@ -1,3 +1,6 @@
+[v1.07]
+Uses the new MENU patching and bridge API.
+
 [v1.06]
 Added Loader-side patcher so that plugin
 loader is not required to be enabled.
