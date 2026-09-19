@@ -1,5 +1,6 @@
 [v1.07]
 Uses the new MENU patching API.
+Adds stale-notification cleaner.
 
 [v1.06]
 Option to toggle progressive +3 steps per coin.
