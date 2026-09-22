@@ -1,3 +1,8 @@
+[v1.08]
+Refactored some achievements, balancing,
+message tweaks, and hardened the coin setter
+menu to patch out minor edge cases.
+
 [v1.07]
 Uses the new MENU patching API.
 Adds stale-notification cleaner.

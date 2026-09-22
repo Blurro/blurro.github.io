@@ -1,3 +1,6 @@
+[v1.03]
+Auto toggle off after 10 minutes of no WiFi.
+
 [v1.02]
 Fixed speeds and only allocates when in use.
 
