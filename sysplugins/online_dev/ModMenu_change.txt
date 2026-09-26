@@ -1,5 +1,5 @@
 [v1.05]
-Extract non-compressed asset API, no freeze.
+Extract non-compressed asset API.
 
 [v1.04]
 New Loader-side MENU plugin, provides a
