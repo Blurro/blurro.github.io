@@ -1,3 +1,6 @@
+[v1.05]
+Extract non-compressed asset API, no freeze.
+
 [v1.04]
 New Loader-side MENU plugin, provides a
 bridge API for Loader-side plugins to talk

@@ -1,5 +1,5 @@
-MENU00000068;menu_r.bin
-MENU00000068:menu_l.bin
+MENU00000069;menu_r.bin
+MENU00000069:menu_l.bin
 blur00000067;blur_r.bin
 coin0000006C;coin_r.bin
 coin0000006C:coin_l.bin
