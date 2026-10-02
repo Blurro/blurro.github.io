@@ -32,17 +32,6 @@ Prevents power-off unless START is held.
 Luma fork originally created by WerWolv.
 R:powr
 
-CTGP-7
-CTGP7.70.3nx
-4
-Compatibility with CTGP-7!
-Includes features like rainbow shells -
-has a menu to toggle custom patches.
-Message @blurro if this is ever outdated.
-R:blur
-L:ctgp
-R:ctgp
-
 Hello World
 HelloWorld.70.3nx
 2
