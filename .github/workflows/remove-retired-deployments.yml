@@ -1,0 +1,55 @@
+name: Remove retired personal-page deployment records
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/remove-retired-deployments.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove deployment references containing retired personal pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node --input-type=module <<'JS'
+          const base = `${process.env.GITHUB_API_URL}/repos/${process.env.GITHUB_REPOSITORY}`;
+          const headers = {
+            Authorization: `Bearer ${process.env.GH_TOKEN}`,
+            Accept: 'application/vnd.github+json',
+            'X-GitHub-Api-Version': '2022-11-28'
+          };
+          const candidates = [];
+          for (let page = 1; ; page++) {
+            const response = await fetch(`${base}/deployments?environment=github-pages&per_page=100&page=${page}`, {headers});
+            if (!response.ok) throw new Error(`Listing deployment records failed: ${response.status}`);
+            const deployments = await response.json();
+            candidates.push(...deployments.filter(d => d.created_at >= '2026-10-16T00:00:00Z'));
+            if (deployments.length < 100 || deployments.some(d => d.created_at < '2026-10-16T00:00:00Z')) break;
+          }
+          let removed = 0;
+          for (const deployment of candidates) {
+            const source = await fetch(`${base}/contents/portfolio?ref=${deployment.sha}`, {headers});
+            if (source.status === 404) continue;
+            if (!source.ok) throw new Error(`Checking retired pages failed: ${source.status}`);
+            const entries = await source.json();
+            if (!Array.isArray(entries) || !entries.some(e => e.name === 'src')) continue;
+            const inactive = await fetch(`${base}/deployments/${deployment.id}/statuses`, {
+              method: 'POST', headers: {...headers, 'Content-Type': 'application/json'},
+              body: JSON.stringify({state: 'inactive'})
+            });
+            if (!inactive.ok) throw new Error(`Retiring a deployment failed: ${inactive.status}`);
+            const response = await fetch(`${base}/deployments/${deployment.id}`, {method: 'DELETE', headers});
+            if (response.status !== 204 && response.status !== 404) {
+              throw new Error(`Removing a retired deployment failed: ${response.status}`);
+            }
+            removed++;
+          }
+          console.log(`Removed ${removed} retired deployment records.`);
+          JS
