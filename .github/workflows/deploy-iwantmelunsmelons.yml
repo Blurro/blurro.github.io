@@ -1,4 +1,4 @@
-name: Deploy iwantmelunsmelons to GitHub Pages
+name: Deploy existing pages to GitHub Pages
 
 on:
   push:
@@ -45,6 +45,9 @@ jobs:
         run: |
           rm -rf _site
           mkdir -p _site/iwantmelunsmelons
+
+          cp -a site-root/. _site/
+          test -f _site/index.html
 
           cp -a iwantmelunsmelons/dist/client/. _site/iwantmelunsmelons/
 
