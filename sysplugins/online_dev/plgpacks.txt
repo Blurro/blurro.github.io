@@ -34,7 +34,7 @@ Prevents power-off unless START is held.
 Luma fork originally created by WerWolv.
 R:powr
 
-Autoreboot into Luma3DS (CTGP-7)
+Auto-reboot into Luma3DS (CTGP-7)
 RebootTitle.400.3nx
 5
 Reboot configured titles into another FIRM.

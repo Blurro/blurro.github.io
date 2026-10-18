@@ -8,6 +8,8 @@ ctgp0000006B;ctgp_r.bin
 ctgp0000006B:ctgp_l.bin
 helo00000065;hello_r.bin
 ftpd00000067;ftpd_r.bin
+rbot00000064;rbot_r.bin
+rbot00000064:rbot_l.bin
 ---
 Sysplugin Menu
 ModMenu.0.3nx
@@ -31,6 +33,17 @@ PowerPrevent.60.3nx
 Prevents power-off unless START is held.
 Luma fork originally created by WerWolv.
 R:powr
+
+Auto-reboot into Luma3DS (CTGP-7)
+RebootTitle.400.3nx
+5
+Reboot configured titles into another FIRM.
+Edit /luma/payloads/swap/config.ini to add
+more entries.
+Already comes with stock Luma3DS embedded
+and preconfigured with CTGP-7 Launcher.
+L:rbot
+R:rbot
 
 Hello World
 HelloWorld.70.3nx
