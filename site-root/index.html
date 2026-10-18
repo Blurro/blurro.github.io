@@ -15,7 +15,7 @@
       main{min-height:100svh;display:grid;place-items:center;padding:40px 42px}
       .identity{width:min(100%,862px);position:relative;text-align:center;padding:70px 38px 55px}
       .identity::before,.identity::after{content:'';position:absolute;pointer-events:none;width:58px;height:58px;border-color:#6268ff99;border-style:solid}.identity::before{inset:0 auto auto 0;border-width:1px 0 0 1px}.identity::after{inset:auto 0 0 auto;border-width:0 1px 1px 0}
-      h1{margin:0;font-size:0;line-height:0}.logo{display:block;width:688px;height:136px;margin-inline:auto;image-rendering:crisp-edges;image-rendering:pixelated}
+      h1{margin:0;font-size:0;line-height:0;-webkit-user-select:none;user-select:none}.logo{display:block;width:688px;height:136px;margin-inline:auto;image-rendering:crisp-edges;image-rendering:pixelated;-webkit-user-drag:none;pointer-events:none}
       .divider{display:flex;align-items:center;gap:8px;width:min(100%,390px);margin:35px auto 29px}.divider::before,.divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,#4f56b8)}.divider::after{transform:rotate(180deg)}.divider span{width:4px;height:4px;transform:rotate(45deg);background:var(--blue)}
       .links{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:12px}.link{min-width:156px;display:inline-flex;align-items:center;justify-content:space-between;gap:30px;padding:13px 17px;background:#11121be0;border:1px solid #373a60;color:#bfc3e1;font:11px var(--mono);transition:border-color .18s,background .18s,color .18s}.link-primary{border-color:#575eda;background:#202345b8;color:#e4e5ff}.link:hover{border-color:#8b94ff;background:#25294bbb;color:#fff}.link svg{width:14px;height:14px;color:var(--bright)}
       @media(max-width:880px){main{padding:30px 28px}.identity{padding:60px 20px 45px}.logo{width:516px;height:102px}}
@@ -27,7 +27,7 @@
   <body>
     <main>
       <section class="identity" aria-labelledby="name">
-        <h1 id="name"><picture><source media="(prefers-reduced-motion: reduce)" srcset="/assets/blurro-logo-still.png"><img class="logo" src="/assets/blurro-logo.gif" alt="Blurro" width="86" height="17" fetchpriority="high"></picture></h1>
+        <h1 id="name"><picture><source media="(prefers-reduced-motion: reduce)" srcset="/assets/blurro-logo-still.png"><img class="logo" draggable="false" src="/assets/blurro-logo.gif" alt="Blurro" width="86" height="17" fetchpriority="high"></picture></h1>
         <div class="divider" aria-hidden="true"><span></span><span></span><span></span></div>
         <nav class="links" aria-label="Profiles">
           <a class="link link-primary" href="https://github.com/Blurro">GitHub<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M4 12 12 4M4 4h8v8"/></svg></a>
