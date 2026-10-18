@@ -5,7 +5,7 @@ coin0000006C;coin_r.bin
 coin0000006C:coin_l.bin
 powr00000065;powr_r.bin
 helo00000065;hello_r.bin
-ftpd00000067;ftpd_r.bin
+ftpd00000068;ftpd_r.bin
 rbot00000065;rbot_r.bin
 rbot00000065:rbot_l.bin
 brgt00000064;brgt_r.bin
