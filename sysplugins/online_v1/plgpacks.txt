@@ -36,12 +36,15 @@ R:powr
 
 Auto-reboot into Luma3DS (CTGP-7)
 RebootTitle.400.3nx
-5
+8
 Reboot configured titles into another FIRM.
+Already comes with Luma3DS embedded.
+
+This means you can simply launch CTGP-7
+from Nexus3DS!
+
 Edit /luma/payloads/swap/config.ini to add
 more entries.
-Already comes with stock Luma3DS embedded
-and preconfigured with CTGP-7 Launcher.
 L:rbot
 R:rbot
 
