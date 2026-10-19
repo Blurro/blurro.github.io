@@ -4,12 +4,11 @@ blur00000067;blur_r.bin
 coin0000006C;coin_r.bin
 coin0000006C:coin_l.bin
 powr00000065;powr_r.bin
-ctgp0000006B;ctgp_r.bin
-ctgp0000006B:ctgp_l.bin
 helo00000065;hello_r.bin
-ftpd00000067;ftpd_r.bin
-rbot00000064;rbot_r.bin
-rbot00000064:rbot_l.bin
+ftpd00000068;ftpd_r.bin
+rbot00000065;rbot_r.bin
+rbot00000065:rbot_l.bin
+brgt00000064;brgt_r.bin
 ---
 Sysplugin Menu
 ModMenu.0.3nx
@@ -62,3 +61,15 @@ Background FTP server for SD card transfers.
 Disable in Manage... when not in use!
 Originally created by mtheall.
 R:ftpd
+
+Brightness Keep
+BrightnessKeep.60.3nx
+7
+In Nexus3DS you can already raise the
+brightness over the usual maximum at
+System configuration -> Change brightness
+
+This will make sure to persist brightness
+after sleep+wake, with an option to toggle
+it to persist even after reboot.
+R:brgt
