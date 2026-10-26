@@ -1,3 +1,8 @@
+[v1.06]
+Faster file handling by avoiding costly
+SetSize operations.
+Online Menu tweaks.
+
 [v1.05]
 Extract non-compressed asset API function.
 Reduced boot time.

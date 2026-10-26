@@ -1,8 +1,8 @@
-MENU00000069;menu_r.bin
-MENU00000069:menu_l.bin
-blur00000067;blur_r.bin
-coin0000006C;coin_r.bin
-coin0000006C:coin_l.bin
+MENU0000006A;menu_r.bin
+MENU0000006A:menu_l.bin
+blur00000068;blur_r.bin
+coin0000006D;coin_r.bin
+coin0000006D:coin_l.bin
 powr00000065;powr_r.bin
 helo00000065;hello_r.bin
 ftpd00000068;ftpd_r.bin
