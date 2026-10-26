@@ -1,6 +1,6 @@
 MENU0000006A;menu_r.bin
 MENU0000006A:menu_l.bin
-blur00000067;blur_r.bin
+blur00000068;blur_r.bin
 coin0000006D;coin_r.bin
 coin0000006D:coin_l.bin
 powr00000065;powr_r.bin
