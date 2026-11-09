@@ -1,0 +1,4 @@
+[v1.02]
+Luma3DS 13.5 compatibility - FIRM is
+incompatible with older Nexus3DS, and
+require Nexus3DS to be updated.

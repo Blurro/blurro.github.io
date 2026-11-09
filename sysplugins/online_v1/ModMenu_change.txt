@@ -1,3 +1,6 @@
+[v1.07]
+Compatibility with newest Nexus3DS.
+
 [v1.06]
 Faster file handling by avoiding costly
 SetSize operations.
