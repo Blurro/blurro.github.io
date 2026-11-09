@@ -6,8 +6,8 @@ coin0000006D:coin_l.bin
 powr00000065;powr_r.bin
 helo00000065;hello_r.bin
 ftpd00000068;ftpd_r.bin
-rbot00000066;rbot_r.bin
-rbot00000066:rbot_l.bin
+rbot00000065;rbot_r.bin
+rbot00000065:rbot_l.bin
 brgt00000064;brgt_r.bin
 ---
 Sysplugin Menu
