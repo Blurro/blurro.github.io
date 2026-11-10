@@ -1,3 +1,11 @@
+[v1.10]
+Fixed the case where a game (Project Mirai)
+handles the Play Coin calculations itself.
+PlayCoinz now handles this conflict by
+storing boundary values in coins.bin.
+
+& Calendar-change related minor bugfixes.
+
 [v1.09]
 Avoids costly file resizing.
 
