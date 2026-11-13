@@ -1,10 +1,16 @@
 [v1.10]
-Fixed the case where a game (Project Mirai)
-handles the Play Coin calculations itself.
-PlayCoinz now handles this conflict by
-storing boundary values in coins.bin.
+Some games such as Mii Plaza handled coin
+earnings in a way that conflicted with
+PlayCoinz - new logic has been added to
+work around all such cases.
 
-& Calendar-change related minor bugfixes.
+ALL regions & firmwares are now supported.
+
+Calendar changing bugfix:
+- Setting the date back, then forward into a
+  day that already had steps, then crossing
+  the following midnight, has had corrected
+  coin catch-up logic.
 
 [v1.09]
 Avoids costly file resizing.
