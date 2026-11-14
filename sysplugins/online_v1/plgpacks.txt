@@ -8,7 +8,7 @@ helo00000065;hello_r.bin
 ftpd00000068;ftpd_r.bin
 rbot00000066;rbot_r.bin
 rbot00000066:rbot_l.bin
-brgt00000064;brgt_r.bin
+brgt00000065;brgt_r.bin
 ---
 Sysplugin Menu
 ModMenu.0.3nx
