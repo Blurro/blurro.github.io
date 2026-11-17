@@ -1,3 +1,6 @@
+[v1.11]
+Hotfix. Please scroll down to v1.10 changes.
+
 [v1.10]
 Some games such as Mii Plaza handled coin
 earnings in a way that conflicted with
